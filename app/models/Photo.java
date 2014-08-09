@@ -14,6 +14,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "photos")
 public class Photo extends Model implements BasicModel<Long> {
+
+    public static Finder<Long, Photo> find= new Model.Finder<>(Long.class, Photo.class);
+
     @Id
     private Long ID;
 

@@ -19,6 +19,8 @@ import javax.persistence.Table;
 @Table(name = "messages")
 public class Message extends Model implements BasicModel<Long> {
 
+    public static Finder<Long, Message> find= new Model.Finder<>(Long.class, Message.class);
+
     @Id
     private Long ID;
 

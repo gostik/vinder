@@ -16,6 +16,9 @@ import javax.persistence.*;
 @Table(name = "likes")
 public class Like extends Model implements BasicModel<Long> {
 
+
+    public static Finder<Long, Like> find= new Model.Finder<>(Long.class, Like.class);
+
     @Id
     private Long ID;
 

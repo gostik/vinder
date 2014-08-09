@@ -17,6 +17,8 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends Model implements BasicModel<Long> {
+   //@JsonIgnore
+    public static Finder<Long, User> find= new Model.Finder<>(Long.class, User.class);
 
     @Id
     private Long ID;

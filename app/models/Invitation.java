@@ -16,6 +16,8 @@ import javax.persistence.*;
 @Table(name = "invitations")
 public class Invitation extends Model implements BasicModel<Long> {
 
+    public static Finder<Long, Invitation> find= new Model.Finder<>(Long.class, Invitation.class);
+
     @Id
     private Long ID;
 

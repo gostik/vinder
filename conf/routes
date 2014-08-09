@@ -6,33 +6,34 @@
 
 # Home page
 # Home page
-GET         /                              controllers.Application.index()
+GET         /                                     controllers.Application.index()
 
 # Users
-GET         /users/:id                     controllers.Application.getUser(id: Long)
-GET         /users/:uid                    controllers.Application.getUserUid(uid: Long)
-POST        /users/create                  controllers.Application.newUser()
-GET         /users/:id/getNextPhoto        controllers.Application.getNextPhoto(id: Long)
-POST        /users/:id/updateUser          controllers.Application.updateUser(id: Long)
+GET         /users/get/:id                        controllers.Application.getUser(id: Long)
+GET         /users/getByUid/:uid                  controllers.Application.getUserUid(uid: Long)
+POST        /users/create                         controllers.Application.newUser()
+
+POST        /users/:id/update                     controllers.Application.updateUser(id: Long)
 
 #Photos
-GET         /photo/:id                     controllers.Application.getPhoto(id: Long)
-GET         /photo/:user_id                controllers.Application.getPhotos(user_id: Long)
-POST        /newPhoto                      controllers.Application.newPhoto()
-POST        /photo/:id                     controllers.Application.deletePhoto(id: Long)
+GET         /photo/get/:id                        controllers.Application.getPhoto(id: Long)
+GET         /photo/getByUid/:user_id              controllers.Application.getPhotos(user_id: Long)
+POST        /photo/create/                         controllers.Application.newPhoto()
+POST        /photo/delete/:id                     controllers.Application.deletePhoto(id: Long)
+GET         /photo/getNext/:user_id               controllers.Application.getNextPhoto(user_id: Long)
 
 #Messages
-GET         /messages/:id                  controllers.Application.getMessage(id: Long)
-GET         /messages                      controllers.Application.getMessages(who_id: Long, whom_id: Long)
-POST        /newMessage                    controllers.Application.newMessage()
+GET         /messages/get/:id                     controllers.Application.getMessage(id: Long)
+GET         /messages/get/:who_id/:whom_id        controllers.Application.getMessages(who_id: Long, whom_id: Long)
+POST        /messages/create                      controllers.Application.newMessage()
 
 #Likes
-GET         /likes/:id                     controllers.Application.getLike(id: Long)
-GET         /likes                         controllers.Application.getLikes(who_id: Long, whom_id: Long)
-POST        /newLike                       controllers.Application.newLike()
+GET         /likes/get/:id                        controllers.Application.getLike(id: Long)
+GET         /likes/get/:who_id/:whom_id           controllers.Application.getLikes(who_id: Long, whom_id: Long)
+POST        /likes/create                         controllers.Application.newLike()
 
 
 # CRUD Controllers
-->          /app                           play.crud.Routes
+->          /app                                  play.crud.Routes
 # REST API
-->          /api                           play.rest.Routes
+->          /api                                  play.rest.Routes
