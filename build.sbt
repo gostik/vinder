@@ -4,7 +4,8 @@ version := "0.7.3-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   javaCore, javaJdbc, javaEbean,
-  "play2-crud" % "play2-crud_2.10" % "0.7.3-SNAPSHOT"
+  "play2-crud" % "play2-crud_2.10" % "0.7.3-SNAPSHOT",
+  "com.typesafe" %% "play-plugins-redis" % "2.2.1"
 )
 
 play.Project.playJavaSettings
@@ -12,3 +13,5 @@ play.Project.playJavaSettings
 resolvers += "release repository" at  "http://hakandilek.github.com/maven-repo/releases/"
 
 resolvers += "snapshot repository" at "http://hakandilek.github.com/maven-repo/snapshots/"
+
+resolvers += "Sedis repository" at "http://pk11-scratch.googlecode.com/svn/trunk/"

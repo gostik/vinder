@@ -112,16 +112,4 @@ public class Complex extends Model implements BasicModel<Long> {
 		return builder.toString();
 	}
 
-	static enum Select {
-		@EnumValue("1")
-		OPTION1,
-
-		@EnumValue("2")
-		OPTION2,
-
-		@EnumValue("3")
-		OPTION3,
-
-		;
-	}
 }
