@@ -155,4 +155,12 @@ public class User extends Model implements BasicModel<Long> {
 
         this.ID = key;
     }
+
+    public Set<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(Set<Photo> photos) {
+        this.photos = photos;
+    }
 }

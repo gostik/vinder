@@ -8,6 +8,10 @@ import play.libs.Json;
 import play.mvc.*;
 import play.utils.cache.CachedFinder;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 public class Application extends Controller {
 
     public static Result index() {
@@ -33,10 +37,10 @@ public class Application extends Controller {
 
         User user = Json.fromJson(body, User.class);
 
-        int rowCount =  User.find.where().eq("uid",user.getUid()).findRowCount();
+        int rowCount = User.find.where().eq("uid", user.getUid()).findRowCount();
 
         if (rowCount > 0)
-            return userStatusBuilder.getErrorStatus("User with uid="+user.getUid()+" already exists");
+            return userStatusBuilder.getErrorStatus("User with uid=" + user.getUid() + " already exists");
 
         if (user != null) {
             user.save();
@@ -51,63 +55,212 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateUser(long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        User newUser = Json.fromJson(body, User.class);
+
+        User oldUser = User.find.byId(id);
+
+        if (oldUser == null)
+            return userStatusBuilder.getErrorStatus("User with uid=" + newUser.getUid() + " not exists");
+
+        oldUser.update(newUser);
+
+        oldUser.refresh();
+
+        Status responseStatus = userStatusBuilder.getResponseStatus(oldUser);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUserUid(long uid) {
-        return play.mvc.Results.TODO;
+
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+
+        User user = User.find.where().eq("uid", uid).findUnique();
+
+        if (user == null)
+            return userStatusBuilder.getErrorStatus("User with uid=" + uid + " not exists");
+
+        Status responseStatus = userStatusBuilder.getResponseStatus(user);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newPhoto() {
-        String s = request().body().asText();
-        return play.mvc.Results.TODO;
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Photo photo = Json.fromJson(body, Photo.class);
+
+        int rowCount = User.find.where().eq("url", photo.getUrl()).findRowCount();
+
+        if (rowCount > 0)
+            return photoStatusBuilder.getErrorStatus("Photo with url=" + photo.getUrl() + " already exists");
+
+        if (photo != null) {
+            photo.save();
+            photo.refresh();
+        }
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(photo);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result deletePhoto(long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+
+        Photo photo = Photo.find.byId(id);
+
+        if (photo == null)
+            return photoStatusBuilder.getErrorStatus("Photo with id=" + id + " not exists");
+
+        photo.delete();
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(photo);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getPhoto(long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+
+        Photo photo = Photo.find.byId(id);
+
+        if (photo == null)
+            return photoStatusBuilder.getErrorStatus("Photo with id=" + id + " not exists");
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(photo);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getPhotos(long user_id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Set<Photo>> photoStatusBuilder = new StatusBuilder<>();
+
+        Set<Photo> photos = User.find.byId(user_id).getPhotos();
+
+        if ((photos == null) || photos.isEmpty())
+            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " has not photos");
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(photos);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newMessage() {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Message message = Json.fromJson(body, Message.class);
+
+        if (message != null) {
+            message.save();
+            message.refresh();
+        }
+
+        Status responseStatus = messageStatusBuilder.getResponseStatus(message);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getMessages(long who_id, long whom_id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<List<Message>> userStatusBuilder = new StatusBuilder<>();
+
+        List<Message> messages = Message.find
+                .where()
+                .eq("who", User.find.byId(who_id))
+                .eq("whom", User.find.byId(whom_id))
+                .findList();
+
+        if (messages == null || messages.isEmpty())
+            return userStatusBuilder.getErrorStatus("Messages with who_id=" + who_id + " whom_id=" + whom_id + " not exists");
+
+        Status responseStatus = userStatusBuilder.getResponseStatus(messages);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getMessage(long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Message> photoStatusBuilder = new StatusBuilder<>();
+
+        Message message = Message.find.byId(id);
+
+        if (message == null)
+            return photoStatusBuilder.getErrorStatus("Message with id=" + id + " not exists");
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(message);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getLike(long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Like> photoStatusBuilder = new StatusBuilder<>();
+
+        Like like = Like.find.byId(id);
+
+        if (like == null)
+            return photoStatusBuilder.getErrorStatus("Like with id=" + id + " not exists");
+
+        Status responseStatus = photoStatusBuilder.getResponseStatus(like);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getLikes(long who_id, long whom_id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<List<Like>> userStatusBuilder = new StatusBuilder<>();
+
+        List<Like> likes = Like.find.where()
+                .eq("who", User.find.byId(who_id))
+                .eq("whom", User.find.byId(who_id))
+                .findList();
+
+        if (likes == null || likes.isEmpty())
+            return userStatusBuilder.getErrorStatus("Likes with who_id=" + who_id + " whom_id=" + whom_id + " not exists");
+
+        Status responseStatus = userStatusBuilder.getResponseStatus(likes);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newLike() {
-        return play.mvc.Results.TODO;
+        StatusBuilder<Like> messageStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Like like = Json.fromJson(body, Like.class);
+
+
+        List<Like> list = Like.find.where()
+                .eq("who", like.getWho())
+                .eq("whom", like.getWhom())
+                .findList();
+
+        if (list.size() > 1)
+            return messageStatusBuilder.getErrorStatus("Same like already exists: who:" + like.getWho() + "\n whom:" + like.getWhom());
+
+        like.save();
+        like.refresh();
+
+        Status responseStatus = messageStatusBuilder.getResponseStatus(like);
+
+        return responseStatus;
     }
 
 
