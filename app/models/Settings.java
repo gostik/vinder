@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "settings")
 public class Settings extends Model implements BasicModel<Long> {
 
-    public static Finder<Long, Settings> find= new Model.Finder<>(Long.class, Settings.class);
+    public static Finder<Long, Settings> find = new Model.Finder<>(Long.class, Settings.class);
 
     @Id
     private Long ID;
@@ -34,6 +34,11 @@ public class Settings extends Model implements BasicModel<Long> {
 
     @Basic
     Boolean filter_is_pro;
+
+    @Basic
+    public Boolean pro_status = false;
+    @Basic
+    public Boolean vip_status = false;
 
     @Basic
     @Constraints.Max(value = 2)
@@ -119,5 +124,21 @@ public class Settings extends Model implements BasicModel<Long> {
 
     public void setHide_age(Boolean hide_age) {
         this.hide_age = hide_age;
+    }
+
+    public Boolean getPro_status() {
+        return pro_status;
+    }
+
+    public void setPro_status(Boolean pro_status) {
+        this.pro_status = pro_status;
+    }
+
+    public Boolean getVip_status() {
+        return vip_status;
+    }
+
+    public void setVip_status(Boolean vip_status) {
+        this.vip_status = vip_status;
     }
 }

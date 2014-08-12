@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import akka.actor.*;
 import play.libs.Akka;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -22,9 +23,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-import akka.actor.ActorRef;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -37,6 +35,7 @@ import com.typesafe.plugin.RedisPlugin;
 public class ChatRoom extends UntypedActor {
 
     // Default room.
+
     static ActorRef defaultRoom = Akka.system().actorOf(Props.create(ChatRoom.class));
     private static final String CHANNEL = "messages";
     private static final String MEMBERS = "members";
@@ -44,7 +43,6 @@ public class ChatRoom extends UntypedActor {
     static {
         //add the robot
         new Robot(defaultRoom);
-
         //subscribe to the message channel
         Akka.system().scheduler().scheduleOnce(
                 Duration.create(10, TimeUnit.MILLISECONDS),

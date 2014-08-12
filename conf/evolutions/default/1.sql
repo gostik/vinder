@@ -14,29 +14,43 @@ create table complex (
   constraint pk_complex primary key (key))
 ;
 
-create table invitations (
+create table friendships (
   id                        bigint not null,
   who_id                    bigint,
   whom_id                   bigint,
-  constraint pk_invitations primary key (id))
+  delivered                 boolean,
+  constraint pk_friendships primary key (id))
 ;
 
 create table likes (
   id                        bigint not null,
   who_id                    bigint,
   whom_id                   bigint,
+  result                    boolean,
   constraint pk_likes primary key (id))
+;
+
+create table locations (
+  id                        bigint not null,
+  latitude                  double,
+  longitude                 double,
+  constraint pk_locations primary key (id))
 ;
 
 create table messages (
   id                        bigint not null,
-  like_result               boolean,
+  message                   varchar(255),
   constraint pk_messages primary key (id))
 ;
 
 create table photos (
   id                        bigint not null,
-  url                       varchar(255),
+  url75                     varchar(255),
+  url130                    varchar(255),
+  url604                    varchar(255),
+  url807                    varchar(255),
+  url1280                   varchar(255),
+  url2560                   varchar(255),
   ID_BOOK                   bigint,
   constraint pk_photos primary key (id))
 ;
@@ -45,6 +59,8 @@ create table settings (
   id                        bigint not null,
   filter_by_pro             boolean,
   filter_is_pro             boolean,
+  pro_status                boolean,
+  vip_status                boolean,
   sex                       integer,
   min_age                   integer,
   max_age                   integer,
@@ -63,8 +79,6 @@ create table users (
   id                        bigint not null,
   first_name                varchar(255),
   last_name                 varchar(255),
-  latitude                  double,
-  longitude                 double,
   sex                       integer,
   uid                       bigint,
   created_date              timestamp,
@@ -75,9 +89,11 @@ create table users (
 
 create sequence complex_seq;
 
-create sequence invitations_seq;
+create sequence friendships_seq;
 
 create sequence likes_seq;
+
+create sequence locations_seq;
 
 create sequence messages_seq;
 
@@ -89,10 +105,10 @@ create sequence simple_seq;
 
 create sequence users_seq;
 
-alter table invitations add constraint fk_invitations_who_1 foreign key (who_id) references users (id) on delete restrict on update restrict;
-create index ix_invitations_who_1 on invitations (who_id);
-alter table invitations add constraint fk_invitations_whom_2 foreign key (whom_id) references users (id) on delete restrict on update restrict;
-create index ix_invitations_whom_2 on invitations (whom_id);
+alter table friendships add constraint fk_friendships_who_1 foreign key (who_id) references users (id) on delete restrict on update restrict;
+create index ix_friendships_who_1 on friendships (who_id);
+alter table friendships add constraint fk_friendships_whom_2 foreign key (whom_id) references users (id) on delete restrict on update restrict;
+create index ix_friendships_whom_2 on friendships (whom_id);
 alter table likes add constraint fk_likes_who_3 foreign key (who_id) references users (id) on delete restrict on update restrict;
 create index ix_likes_who_3 on likes (who_id);
 alter table likes add constraint fk_likes_whom_4 foreign key (whom_id) references users (id) on delete restrict on update restrict;
@@ -110,9 +126,11 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 drop table if exists complex;
 
-drop table if exists invitations;
+drop table if exists friendships;
 
 drop table if exists likes;
+
+drop table if exists locations;
 
 drop table if exists messages;
 
@@ -128,9 +146,11 @@ SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists complex_seq;
 
-drop sequence if exists invitations_seq;
+drop sequence if exists friendships_seq;
 
 drop sequence if exists likes_seq;
+
+drop sequence if exists locations_seq;
 
 drop sequence if exists messages_seq;
 

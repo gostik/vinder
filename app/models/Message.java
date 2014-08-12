@@ -1,6 +1,8 @@
 package models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
@@ -19,19 +21,36 @@ import javax.persistence.Table;
 @Table(name = "messages")
 public class Message extends Model implements BasicModel<Long> {
 
-    public static Finder<Long, Message> find= new Model.Finder<>(Long.class, Message.class);
+    public static Finder<Long, Message> find = new Model.Finder<>(Long.class, Message.class);
 
     @Id
     private Long ID;
 
     @Basic
+    @JsonIgnore
     User who;
 
-    @Basic
-    User whom;
+    @JsonProperty("who_id")
+    public Long getWhoId() {
+        if (who != null) {
+            return who.getKey();
+        } else {
+            return null;
+        }
+    }
 
     @Basic
-    Boolean like_result;
+    @JsonIgnore
+    User whom;
+
+    @JsonProperty("whom_id")
+    public Long getWhomId() {
+        if (whom != null) {
+            return whom.getKey();
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public Long getKey() {
@@ -44,7 +63,20 @@ public class Message extends Model implements BasicModel<Long> {
     }
 
     @Basic
-    Invitation invitation;
+    @JsonIgnore
+    Friendship friendship;
+
+    @JsonProperty("invitation_id")
+    public Long getInvitationId() {
+        if (friendship != null) {
+            return friendship.getKey();
+        } else {
+            return null;
+        }
+    }
+
+    @Basic
+    String message;
 
     public User getWho() {
         return who;
@@ -62,19 +94,11 @@ public class Message extends Model implements BasicModel<Long> {
         this.whom = whom;
     }
 
-    public Boolean getLike_result() {
-        return like_result;
+    public Friendship getFriendship() {
+        return friendship;
     }
 
-    public void setLike_result(Boolean like_result) {
-        this.like_result = like_result;
-    }
-
-    public Invitation getInvitation() {
-        return invitation;
-    }
-
-    public void setInvitation(Invitation invitation) {
-        this.invitation = invitation;
+    public void setFriendship(Friendship friendship) {
+        this.friendship = friendship;
     }
 }

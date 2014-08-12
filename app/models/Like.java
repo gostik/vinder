@@ -1,5 +1,11 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.Converter;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
@@ -25,12 +31,17 @@ public class Like extends Model implements BasicModel<Long> {
     @Basic
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     User who;
 
     @Basic
     @Constraints.Required
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     User whom;
+
+    @Basic
+    Boolean result;
 
     public User getWho() {
         return who;
@@ -55,7 +66,30 @@ public class Like extends Model implements BasicModel<Long> {
 
     @Override
     public void setKey(Long key) {
-
         this.ID = key;
     }
+
+    @JsonProperty("who_id")
+    public Long getWhoId(){
+        if (who != null){
+            return who.getKey();
+        }
+        else {
+            return null;
+        }
+    }
+
+    @JsonProperty("whom_id")
+    public Long getWhomId(){
+        if (whom != null){
+            return whom.getKey();
+        }
+        else {
+            return null;
+        }
+    }
+
+
+
+
 }

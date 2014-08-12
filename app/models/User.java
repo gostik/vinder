@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -17,8 +18,8 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends Model implements BasicModel<Long> {
-   //@JsonIgnore
-    public static Finder<Long, User> find= new Model.Finder<>(Long.class, User.class);
+    //@JsonIgnore
+    public static Finder<Long, User> find = new Model.Finder<>(Long.class, User.class);
 
     @Id
     private Long ID;
@@ -32,12 +33,7 @@ public class User extends Model implements BasicModel<Long> {
     private String last_name;
 
     @Basic
-    @Constraints.Required
-    private Double latitude;
-
-    @Basic
-    @Constraints.Required
-    private Double longitude;
+    Location location;
 
     @Basic
     @Constraints.Required
@@ -65,6 +61,7 @@ public class User extends Model implements BasicModel<Long> {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             mappedBy = "user")
+    @JsonIgnore
     Set<Photo> photos;
 //    @OneToMany
 //    List<Like> likeList;
@@ -89,20 +86,12 @@ public class User extends Model implements BasicModel<Long> {
         this.last_name = last_name;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public Integer getSex() {

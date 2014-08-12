@@ -6,34 +6,44 @@
 
 # Home page
 # Home page
-GET         /                                     controllers.Application.index()
+GET         /                                           controllers.Application.index()
 
 # Users
-GET         /users/get/:id                        controllers.Application.getUser(id: Long)
-GET         /users/getByUid/:uid                  controllers.Application.getUserUid(uid: Long)
-POST        /users/create                         controllers.Application.newUser()
+GET         /users/get/:id                              controllers.Application.getUser(id: Long)
+GET         /users/getByUid/:uid                        controllers.Application.getUserUid(uid: Long)
+POST        /users/create                               controllers.Application.newUser()
 
-POST        /users/:id/update                     controllers.Application.updateUser(id: Long)
+POST        /users/update/:id                           controllers.Application.updateUser(id: Long)
+POST        /users/updateLocations/:user_id             controllers.Application.updateLocation(user_id: Long)
+POST        /users/updateSettings/:user_id              controllers.Application.updateSettings(user_id: Long)
+
+
 
 #Photos
-GET         /photo/get/:id                        controllers.Application.getPhoto(id: Long)
-GET         /photo/getByUid/:user_id              controllers.Application.getPhotos(user_id: Long)
-POST        /photo/create/                         controllers.Application.newPhoto()
-POST        /photo/delete/:id                     controllers.Application.deletePhoto(id: Long)
-GET         /photo/getNext/:user_id               controllers.Application.getNextPhoto(user_id: Long)
+GET         /photos/get/:id                             controllers.Application.getPhoto(id: Long)
+GET         /photos/getByUid/:user_id                   controllers.Application.getPhotos(user_id: Long)
+POST        /photos/create/:user_id                     controllers.Application.newPhoto(user_id: Long)
+GET         /photos/delete/:id                          controllers.Application.deletePhoto(id: Long)
+GET         /photos/getNext/:user_id                    controllers.Application.getNextPhoto(user_id: Long)
+GET         /photos/getDisliked/:user_id                controllers.Application.getDisliked(user_id: Long)
 
 #Messages
-GET         /messages/get/:id                     controllers.Application.getMessage(id: Long)
-GET         /messages/get/:who_id/:whom_id        controllers.Application.getMessages(who_id: Long, whom_id: Long)
-POST        /messages/create                      controllers.Application.newMessage()
+GET         /messages/get/:id                           controllers.Application.getMessage(id: Long)
+GET         /messages/get/:who_id/:whom_id              controllers.Application.getMessages(who_id: Long, whom_id: Long)
+POST        /messages/create                            controllers.Application.newMessage()
+POST        /messages/messages/getFromFriendship        controllers.Application.getFromFriendship()
 
 #Likes
-GET         /likes/get/:id                        controllers.Application.getLike(id: Long)
-GET         /likes/get/:who_id/:whom_id           controllers.Application.getLikes(who_id: Long, whom_id: Long)
-POST        /likes/create                         controllers.Application.newLike()
+GET         /likes/get/:id                              controllers.Application.getLike(id: Long)
+GET         /likes/get/:who_id/:whom_id                 controllers.Application.getLikes(who_id: Long, whom_id: Long)
+POST        /likes/create                               controllers.Application.newLike()
 
+POST        /likes/update                               controllers.Application.updateLike()
 
+#Friendships (invitations)
+GET         /friendships/get/:who_id/:whom_id           controllers.Application.getFriendships(who_id: Long, whom_id: Long)
+POST        /friendships/update                         controllers.Application.updateFriendship()
 # CRUD Controllers
-->          /app                                  play.crud.Routes
+->          /app                                        play.crud.Routes
 # REST API
-->          /api                                  play.rest.Routes
+->          /api                                        play.rest.Routes

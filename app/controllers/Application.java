@@ -3,12 +3,9 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
-import play.db.ebean.Model;
 import play.libs.Json;
 import play.mvc.*;
-import play.utils.cache.CachedFinder;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -91,17 +88,20 @@ public class Application extends Controller {
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result newPhoto() {
+    public static Result newPhoto(Long user_id) {
         StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
 
         JsonNode body = request().body().asJson();
 
+        User user = User.find.byId(user_id);
+
+
         Photo photo = Json.fromJson(body, Photo.class);
 
-        int rowCount = User.find.where().eq("url", photo.getUrl()).findRowCount();
+        int rowCount = User.find.where().eq("url", photo.getUrl75()).findRowCount();
 
         if (rowCount > 0)
-            return photoStatusBuilder.getErrorStatus("Photo with url=" + photo.getUrl() + " already exists");
+            return photoStatusBuilder.getErrorStatus("Photo with url=" + photo.getUrl75() + " already exists");
 
         if (photo != null) {
             photo.save();
@@ -282,6 +282,92 @@ public class Application extends Controller {
             }
         };
     }
+
+    public static Result updateLike() {
+        StatusBuilder<Like> likeStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Like like = Json.fromJson(body, Like.class);
+
+        if (like != null)
+            return likeStatusBuilder.getResponseStatus(like);
+
+        return likeStatusBuilder.getErrorStatus("Like is not found.");
+    }
+
+    public static Result getFriendships(long who_id, long whom_id) {
+
+//        Friendship.find.where().
+        return Results.TODO;
+
+    }
+
+    public static Result updateFriendship() {
+        return Results.TODO;
+    }
+
+    public static Result getFromFriendship() {
+        return Results.TODO;
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result updateLocation(long user_id) {
+
+        User user = User.find.byId(user_id);
+
+        StatusBuilder<Location> locationStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Location location = Json.fromJson(body, Location.class);
+
+
+        if (location != null) {
+            user.setLocation(location);
+            return locationStatusBuilder.getResponseStatus(location);
+        }
+
+        return locationStatusBuilder.getErrorStatus("Location is not found.");
+    }
+
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result updateSettings(long user_id) {
+
+        StatusBuilder<Settings> settingsBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Settings settings = Json.fromJson(body, Settings.class);
+
+        if (settings != null)
+            return settingsBuilder.getResponseStatus(settings);
+
+        return settingsBuilder.getErrorStatus("Settings is not found..");
+
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result getDisliked(long user_id) {
+        User user = User.find.byId(user_id);
+
+
+        StatusBuilder<List<Like>> likeStatusBuilder = new StatusBuilder<>();
+
+        if (user == null)
+            likeStatusBuilder.getErrorStatus("User not found with id " + user_id);
+
+        List<Like> list = Like.find.where()
+                .eq("who", user)
+                .eq("like_result", false).findList();
+
+
+        return likeStatusBuilder.getResponseStatus(list);
+
+
+    }
+
 
     private static class StatusBuilder<T> {
 
