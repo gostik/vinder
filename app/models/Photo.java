@@ -21,6 +21,7 @@ public class Photo extends Model implements BasicModel<Long> {
     public static Finder<Long, Photo> find = new Model.Finder<>(Long.class, Photo.class);
 
     @Id
+    @Basic
     private Long ID;
 
     @Basic

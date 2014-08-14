@@ -27,6 +27,7 @@ public class Settings extends Model implements BasicModel<Long> {
     public static Finder<Long, Settings> find = new Model.Finder<>(Long.class, Settings.class);
 
     @Id
+    @Basic
     private Long ID;
 
     @Basic

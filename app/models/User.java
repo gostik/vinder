@@ -21,30 +21,27 @@ public class User extends Model implements BasicModel<Long> {
     //@JsonIgnore
     public static Finder<Long, User> find = new Model.Finder<>(Long.class, User.class);
 
+
+    @Basic
     @Id
     private Long ID;
 
     @Basic
-    @Constraints.Required
     private String first_name;
 
     @Basic
-    @Constraints.Required
     private String last_name;
 
     @Basic
     Location location;
 
     @Basic
-    @Constraints.Required
     private Integer sex;
 
     @Basic
-    @Constraints.Required
     private Long uid;
 
     @Basic
-    @Constraints.Required
     private DateTime createdDate;
 
     @Basic
@@ -52,8 +49,10 @@ public class User extends Model implements BasicModel<Long> {
     private DateTime updatedDate;
 
     @Basic
-    @Constraints.Required
-    @OneToOne
+    private Integer age;
+
+    @Basic
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Settings settings;
 
     @Basic
@@ -151,5 +150,21 @@ public class User extends Model implements BasicModel<Long> {
 
     public void setPhotos(Set<Photo> photos) {
         this.photos = photos;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 }

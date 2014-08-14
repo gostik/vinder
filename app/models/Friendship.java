@@ -20,7 +20,8 @@ public class Friendship extends Model implements BasicModel<Long> {
     public static Finder<Long, Friendship> find= new Model.Finder<>(Long.class, Friendship.class);
 
     @Id
-    private Long ID;
+    @Basic
+    Long ID;
 
     @Basic
     @Constraints.Required

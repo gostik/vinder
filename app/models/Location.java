@@ -21,6 +21,7 @@ public class Location {
     public static Model.Finder<Long, Message> find = new Model.Finder<>(Long.class, Message.class);
 
     @Id
+    @Basic
     private Long ID;
 
     @Basic

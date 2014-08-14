@@ -1,5 +1,6 @@
 package controllers;
 
+import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
@@ -17,7 +18,15 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUser(Long id) {
-        return play.mvc.Results.TODO;
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+
+        User user = User.find.byId(id);
+
+        if (user == null)
+            return userStatusBuilder.getErrorStatus("User with id=" + user.getUid() + " not found");
+        Status responseStatus = userStatusBuilder.getResponseStatus(user);
+
+        return responseStatus;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -78,13 +87,13 @@ public class Application extends Controller {
         StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
 
         User user = User.find.where().eq("uid", uid).findUnique();
+        user.refresh();
 
         if (user == null)
             return userStatusBuilder.getErrorStatus("User with uid=" + uid + " not exists");
 
-        Status responseStatus = userStatusBuilder.getResponseStatus(user);
 
-        return responseStatus;
+        return userStatusBuilder.getResponseStatus(user);
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -296,10 +305,16 @@ public class Application extends Controller {
         return likeStatusBuilder.getErrorStatus("Like is not found.");
     }
 
-    public static Result getFriendships(long who_id, long whom_id) {
 
-//        Friendship.find.where().
-        return Results.TODO;
+    public static Result getFriendshipsToMe(long user_id) {
+
+        StatusBuilder<List<Friendship>> friendshipsStatusBuilder = new StatusBuilder<>();
+
+        User user = User.find.byId(user_id);
+
+        List<Friendship> friendships = Friendship.find.where().eq("whom", user).findList();
+
+        return friendshipsStatusBuilder.getResponseStatus(friendships);
 
     }
 
@@ -341,6 +356,10 @@ public class Application extends Controller {
 
         Settings settings = Json.fromJson(body, Settings.class);
 
+        User user = User.find.byId(user_id);
+        user.setSettings(settings);
+        user.save();
+
         if (settings != null)
             return settingsBuilder.getResponseStatus(settings);
 
@@ -376,13 +395,8 @@ public class Application extends Controller {
 
         private Status getResponseStatus(T object) {
 
-            ObjectNode result = Json.newObject();
             JsonNode jsonNode = Json.toJson(object);
-            result.put("result", "OK");
-
-            result.put("message", Json.stringify(jsonNode));
-
-            return object != null ? ok(result) : badRequest(result);
+            return object != null ? ok(Json.toJson(object)) : badRequest(Json.toJson(null));
         }
 
         private Status getErrorStatus(String reason) {

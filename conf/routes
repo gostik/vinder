@@ -41,7 +41,7 @@ POST        /likes/create                               controllers.Application.
 POST        /likes/update                               controllers.Application.updateLike()
 
 #Friendships (invitations)
-GET         /friendships/get/:who_id/:whom_id           controllers.Application.getFriendships(who_id: Long, whom_id: Long)
+GET         /friendships/get/:user_id                   controllers.Application.getFriendshipsToMe(user_id: Long)
 POST        /friendships/update                         controllers.Application.updateFriendship()
 # CRUD Controllers
 ->          /app                                        play.crud.Routes

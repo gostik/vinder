@@ -26,6 +26,7 @@ public class Like extends Model implements BasicModel<Long> {
     public static Finder<Long, Like> find= new Model.Finder<>(Long.class, Like.class);
 
     @Id
+    @Basic
     private Long ID;
 
     @Basic
