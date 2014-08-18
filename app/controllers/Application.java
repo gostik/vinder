@@ -1,5 +1,6 @@
 package controllers;
 
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,7 +9,6 @@ import play.libs.Json;
 import play.mvc.*;
 
 import java.util.List;
-import java.util.Set;
 
 public class Application extends Controller {
 
@@ -23,7 +23,7 @@ public class Application extends Controller {
         User user = User.find.byId(id);
 
         if (user == null)
-            return userStatusBuilder.getErrorStatus("User with id=" + user.getUid() + " not found");
+            return userStatusBuilder.getErrorStatus("User with id=" + id + " not found");
         Status responseStatus = userStatusBuilder.getResponseStatus(user);
 
         return responseStatus;
@@ -31,7 +31,45 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getNextPhoto(Long id) {
-        return play.mvc.Results.TODO;
+
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+
+        User user = User.find.byId(id);
+
+        if (user == null)
+            return photoStatusBuilder.getErrorStatus("User with id=" + id + " not found");
+
+        Settings settings = user.getSettings();
+        settings.refresh();
+
+        ExpressionList<User> query = User.find.where().conjunction()
+                .between("age", settings.getMin_age(), settings.getMax_age())
+                .ne("id", id)
+                        //sex == sex in settngs or sex ==0
+                .disjunction().add(Expr.eq("sex", settings.getSex())).add(Expr.eq("sex", 0)).conjunction();
+
+        if (settings.getFilter_by_pro()) {
+            query = query.disjunction().add(Expr.eq("pro_status", user.getPro_status())).add(Expr.eq("pro_status", user.getVip_status()));
+        }
+
+        List<User> userList = query.findList();
+
+        for (User userForCheck : userList) {
+
+            //получаем фотки пользователя
+            List<Photo> photos = Photo.find.where().eq("user", userForCheck).findList();
+
+            for (Photo photo : photos) {
+                //берем те , за которые не проголосовали
+                int rowCount = Like.find.where().eq("photo", photo).eq("who", user).findRowCount();
+
+                //если находим ту, за которую не проголосовали- выдаеем
+                if (rowCount == 0)
+                    return photoStatusBuilder.getResponseStatus(photo);
+            }
+        }
+
+        return photoStatusBuilder.getErrorStatus("Photo not found");
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -48,10 +86,8 @@ public class Application extends Controller {
         if (rowCount > 0)
             return userStatusBuilder.getErrorStatus("User with uid=" + user.getUid() + " already exists");
 
-        if (user != null) {
-            user.save();
-            user.refresh();
-        }
+        user.save();
+        user.refresh();
 
         Status responseStatus = userStatusBuilder.getResponseStatus(user);
 
@@ -87,35 +123,39 @@ public class Application extends Controller {
         StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
 
         User user = User.find.where().eq("uid", uid).findUnique();
-        user.refresh();
 
         if (user == null)
             return userStatusBuilder.getErrorStatus("User with uid=" + uid + " not exists");
 
+        user.refresh();
 
         return userStatusBuilder.getResponseStatus(user);
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result newPhoto(Long user_id) {
+    public static Result createPhoto(Long user_id) {
         StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
 
         JsonNode body = request().body().asJson();
 
         User user = User.find.byId(user_id);
 
+        List<Photo> all = Photo.find.all();
+
+        if (user == null)
+            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " not found");
 
         Photo photo = Json.fromJson(body, Photo.class);
 
-        int rowCount = User.find.where().eq("url", photo.getUrl75()).findRowCount();
+        int rowCount = Photo.find.where().eq("url75", photo.getUrl75()).findRowCount();
+
 
         if (rowCount > 0)
             return photoStatusBuilder.getErrorStatus("Photo with url=" + photo.getUrl75() + " already exists");
 
-        if (photo != null) {
-            photo.save();
-            photo.refresh();
-        }
+        photo.setUser(user);
+        photo.save();
+        photo.refresh();
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(photo);
 
@@ -154,11 +194,16 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getPhotos(long user_id) {
-        StatusBuilder<Set<Photo>> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Photo>> photoStatusBuilder = new StatusBuilder<>();
 
-        Set<Photo> photos = User.find.byId(user_id).getPhotos();
+        User user = User.find.byId(user_id);
 
-        if ((photos == null) || photos.isEmpty())
+        if (user == null)
+            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " was not found");
+        user.refresh();
+        List<Photo> photos = user.getPhotos();
+
+        if (photos == null)
             return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " has not photos");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(photos);
@@ -259,6 +304,7 @@ public class Application extends Controller {
         List<Like> list = Like.find.where()
                 .eq("who", like.getWho())
                 .eq("whom", like.getWhom())
+                .eq("photo", like.getPhoto())
                 .findList();
 
         if (list.size() > 1)
@@ -299,8 +345,11 @@ public class Application extends Controller {
 
         Like like = Json.fromJson(body, Like.class);
 
-        if (like != null)
-            return likeStatusBuilder.getResponseStatus(like);
+        Like likeToUpdate = Like.find.byId(like.getID());
+        likeToUpdate.setResult(like.getResult());
+        likeToUpdate.update();
+        if (likeToUpdate != null)
+            return likeStatusBuilder.getResponseStatus(likeToUpdate);
 
         return likeStatusBuilder.getErrorStatus("Like is not found.");
     }
@@ -340,6 +389,7 @@ public class Application extends Controller {
 
         if (location != null) {
             user.setLocation(location);
+            user.update();
             return locationStatusBuilder.getResponseStatus(location);
         }
 
@@ -357,8 +407,13 @@ public class Application extends Controller {
         Settings settings = Json.fromJson(body, Settings.class);
 
         User user = User.find.byId(user_id);
+
         user.setSettings(settings);
-        user.save();
+//        Settings settings1 = user.getSettings();
+//
+//        user.setSettings(settings);
+//
+        user.update();
 
         if (settings != null)
             return settingsBuilder.getResponseStatus(settings);
@@ -379,7 +434,9 @@ public class Application extends Controller {
 
         List<Like> list = Like.find.where()
                 .eq("who", user)
-                .eq("like_result", false).findList();
+                .eq("result", false)
+                .setMaxRows(user!=null && user.getVip_status()?10:1)
+                .findList();
 
 
         return likeStatusBuilder.getResponseStatus(list);

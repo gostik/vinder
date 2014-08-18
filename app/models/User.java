@@ -7,6 +7,8 @@ import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,13 +58,40 @@ public class User extends Model implements BasicModel<Long> {
     private Settings settings;
 
     @Basic
-    @OneToMany(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
     @JsonIgnore
-    Set<Photo> photos;
-//    @OneToMany
+    List<Photo> photos;
+
+
+    @Basic
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    List<Friendship> friendships;
+
+
+    @Basic
+    public Boolean pro_status = false;
+    @Basic
+    public Boolean vip_status = false;
+
+    public Boolean getPro_status() {
+        return pro_status;
+    }
+
+    public void setPro_status(Boolean pro_status) {
+        this.pro_status = pro_status;
+    }
+
+    public Boolean getVip_status() {
+        return vip_status;
+    }
+
+    public void setVip_status(Boolean vip_status) {
+        this.vip_status = vip_status;
+    }
+
+    //    @OneToMany
 //    List<Like> likeList;
 //
 //    @OneToMany
@@ -144,11 +173,11 @@ public class User extends Model implements BasicModel<Long> {
         this.ID = key;
     }
 
-    public Set<Photo> getPhotos() {
+    public List<Photo> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(Set<Photo> photos) {
+    public void setPhotos(ArrayList<Photo> photos) {
         this.photos = photos;
     }
 
@@ -166,5 +195,21 @@ public class User extends Model implements BasicModel<Long> {
 
     public void setID(Long ID) {
         this.ID = ID;
+    }
+
+    public static Finder<Long, User> getFind() {
+        return find;
+    }
+
+    public static void setFind(Finder<Long, User> find) {
+        User.find = find;
+    }
+
+    public List<Friendship> getFriendships() {
+        return friendships;
+    }
+
+    public void setFriendships(ArrayList<Friendship> friendships) {
+        this.friendships = friendships;
     }
 }

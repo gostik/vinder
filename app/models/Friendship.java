@@ -95,4 +95,6 @@ public class Friendship extends Model implements BasicModel<Long> {
     public void setDelivered(Boolean delivered) {
         this.delivered = delivered;
     }
+
+
 }

@@ -26,6 +26,7 @@ create table likes (
   id                        bigint not null,
   who_id                    bigint,
   whom_id                   bigint,
+  photo_id                  bigint,
   result                    boolean,
   constraint pk_likes primary key (id))
 ;
@@ -51,7 +52,7 @@ create table photos (
   url807                    varchar(255),
   url1280                   varchar(255),
   url2560                   varchar(255),
-  ID_BOOK                   bigint,
+  user_id                   bigint,
   constraint pk_photos primary key (id))
 ;
 
@@ -59,8 +60,6 @@ create table settings (
   id                        bigint not null,
   filter_by_pro             boolean,
   filter_is_pro             boolean,
-  pro_status                boolean,
-  vip_status                boolean,
   sex                       integer,
   min_age                   integer,
   max_age                   integer,
@@ -83,10 +82,19 @@ create table users (
   uid                       bigint,
   created_date              timestamp,
   updated_date              timestamp,
+  age                       integer,
   settings_id               bigint,
+  pro_status                boolean,
+  vip_status                boolean,
   constraint pk_users primary key (id))
 ;
 
+
+create table users_friendships (
+  users_id                       bigint not null,
+  friendships_id                 bigint not null,
+  constraint pk_users_friendships primary key (users_id, friendships_id))
+;
 create sequence complex_seq;
 
 create sequence friendships_seq;
@@ -113,12 +121,18 @@ alter table likes add constraint fk_likes_who_3 foreign key (who_id) references 
 create index ix_likes_who_3 on likes (who_id);
 alter table likes add constraint fk_likes_whom_4 foreign key (whom_id) references users (id) on delete restrict on update restrict;
 create index ix_likes_whom_4 on likes (whom_id);
-alter table photos add constraint fk_photos_user_5 foreign key (ID_BOOK) references users (id) on delete restrict on update restrict;
-create index ix_photos_user_5 on photos (ID_BOOK);
-alter table users add constraint fk_users_settings_6 foreign key (settings_id) references settings (id) on delete restrict on update restrict;
-create index ix_users_settings_6 on users (settings_id);
+alter table likes add constraint fk_likes_photo_5 foreign key (photo_id) references photos (id) on delete restrict on update restrict;
+create index ix_likes_photo_5 on likes (photo_id);
+alter table photos add constraint fk_photos_user_6 foreign key (user_id) references users (id) on delete restrict on update restrict;
+create index ix_photos_user_6 on photos (user_id);
+alter table users add constraint fk_users_settings_7 foreign key (settings_id) references settings (id) on delete restrict on update restrict;
+create index ix_users_settings_7 on users (settings_id);
 
 
+
+alter table users_friendships add constraint fk_users_friendships_users_01 foreign key (users_id) references users (id) on delete restrict on update restrict;
+
+alter table users_friendships add constraint fk_users_friendships_friendsh_02 foreign key (friendships_id) references friendships (id) on delete restrict on update restrict;
 
 # --- !Downs
 
@@ -141,6 +155,8 @@ drop table if exists settings;
 drop table if exists simple;
 
 drop table if exists users;
+
+drop table if exists users_friendships;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 

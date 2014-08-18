@@ -1,12 +1,10 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +20,7 @@ public class Photo extends Model implements BasicModel<Long> {
 
     @Id
     @Basic
-    private Long ID;
+    public Long ID;
 
     @Basic
     public String url75 = "";
@@ -37,21 +35,12 @@ public class Photo extends Model implements BasicModel<Long> {
     @Basic
     public String url2560 = "";
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinTable(name = "CATALOG",
-            joinColumns = @JoinColumn(name = "ID_BOOK"),
-            inverseJoinColumns = @JoinColumn(name = "ID_STUDENT"))
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     User user;
+//
+//    @OneToMany(fetch = FetchType.EAGER)
+//    List<Like> likeList;
 
-    @JsonProperty("user_id")
-    public Long getUserId() {
-        if (user != null) {
-            return user.getKey();
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public Long getKey() {
@@ -60,7 +49,6 @@ public class Photo extends Model implements BasicModel<Long> {
 
     @Override
     public void setKey(Long key) {
-
         this.ID = key;
     }
 
@@ -87,4 +75,20 @@ public class Photo extends Model implements BasicModel<Long> {
     public String getUrl2560() {
         return url2560;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+//
+//    public List<Like> getLikeList() {
+//        return likeList;
+//    }
+//
+//    public void setLikeList(List<Like> likeList) {
+//        this.likeList = likeList;
+//    }
 }

@@ -21,8 +21,8 @@ POST        /users/updateSettings/:user_id              controllers.Application.
 
 #Photos
 GET         /photos/get/:id                             controllers.Application.getPhoto(id: Long)
-GET         /photos/getByUid/:user_id                   controllers.Application.getPhotos(user_id: Long)
-POST        /photos/create/:user_id                     controllers.Application.newPhoto(user_id: Long)
+GET         /photos/getByUserId/:user_id                controllers.Application.getPhotos(user_id: Long)
+POST        /photos/create/:user_id                     controllers.Application.createPhoto(user_id: Long)
 GET         /photos/delete/:id                          controllers.Application.deletePhoto(id: Long)
 GET         /photos/getNext/:user_id                    controllers.Application.getNextPhoto(user_id: Long)
 GET         /photos/getDisliked/:user_id                controllers.Application.getDisliked(user_id: Long)

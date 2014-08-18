@@ -31,18 +31,37 @@ public class Like extends Model implements BasicModel<Long> {
 
     @Basic
     @Constraints.Required
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     User who;
 
     @Basic
     @Constraints.Required
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     User whom;
 
     @Basic
+    @Constraints.Required
+    @ManyToOne(fetch = FetchType.EAGER)
+    Photo photo;
+
+    @Basic
     Boolean result;
+
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
+    }
+
+    public Boolean getResult() {
+        return result;
+    }
+
+    public void setResult(Boolean result) {
+        this.result = result;
+    }
 
     public User getWho() {
         return who;
@@ -90,7 +109,11 @@ public class Like extends Model implements BasicModel<Long> {
         }
     }
 
+    public Long getID() {
+        return ID;
+    }
 
-
-
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 }
