@@ -5,15 +5,71 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
+import play.libs.F;
 import play.libs.Json;
-import play.mvc.*;
+import play.mvc.BodyParser;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.WebSocket;
 
 import java.util.List;
 
 public class Application extends Controller {
 
-    public static Result index() {
-        return ok(views.html.index.render());
+    private static WebSocket<JsonNode> chat;
+    private static WebSocket<String> socket;
+    private static WebSocket.In<String> inStream;
+    private static WebSocket.Out<String> outStream;
+
+
+    public static WebSocket<String> index() {
+
+        if (socket != null) return socket;
+
+        socket = new WebSocket<String>() {
+
+            // Called when the Websocket Handshake is done.
+            public void onReady(In<String> in, final Out<String> out) {
+
+                inStream = in;
+
+                outStream = out;
+                // For each event received on the socket,
+                in.onMessage(new F.Callback<String>() {
+                    public void invoke(String event) {
+
+                        JsonNode parse = Json.parse(event);
+
+                        JsonNode messageJson = parse.get("message");
+
+                        if (messageJson==null)
+                            return;
+
+                        Message message = Json.fromJson(messageJson, Message.class);
+
+                        message.save();
+
+                        out.write(event);
+
+                        System.out.print(event);
+
+                    }
+                });
+
+                // When the socket is closed.
+                in.onClose(new F.Callback0() {
+                    public void invoke() {
+
+                        System.out.print("Disconnected");
+
+                    }
+                });
+
+            }
+
+        };
+
+        return socket;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -222,6 +278,9 @@ public class Application extends Controller {
         if (message != null) {
             message.save();
             message.refresh();
+
+            if (outStream != null)
+                outStream.write(Json.stringify(Json.toJson(message)));
         }
 
         Status responseStatus = messageStatusBuilder.getResponseStatus(message);
@@ -307,15 +366,64 @@ public class Application extends Controller {
                 .eq("photo", like.getPhoto())
                 .findList();
 
-        if (list.size() > 1)
+        if (list.size() > 0)
             return messageStatusBuilder.getErrorStatus("Same like already exists: who:" + like.getWho() + "\n whom:" + like.getWhom());
 
         like.save();
         like.refresh();
 
+        checkLikesAndCreateFriendshipIfNeed(like);
+
         Status responseStatus = messageStatusBuilder.getResponseStatus(like);
 
         return responseStatus;
+    }
+
+    private static void checkLikesAndCreateFriendshipIfNeed(Like like) {
+
+        List<Like> likes = Like.find.where().eq("result", Boolean.TRUE)
+                .and(Expr.and(Expr.eq("who", like.getWho()), Expr.eq("whom", like.getWhom())),
+                        Expr.and(Expr.eq("whom", like.getWho()), Expr.eq("who", like.getWhom())))
+                .findList();
+
+        boolean mutualDetected = likes.isEmpty();
+
+        boolean alreadyFriends = Friendship.find.where()
+                .or(Expr.and(Expr.eq("user1", like.getWho()), Expr.eq("user2", like.getWhom())),
+                        Expr.and(Expr.eq("user2", like.getWho()), Expr.eq("user1", like.getWhom())))
+                .findRowCount() > 0;
+
+
+        ////ITS NEW FRIENDSHIP!!!!//
+
+
+        if (!mutualDetected || alreadyFriends) return;
+
+        Like likeToHim = like;
+        List<Like> likesToMe = Like.find.where()
+                .eq("result", Boolean.TRUE)
+                .eq("whom", like.getWho())
+                .eq("who", like.getWhom())
+                .findList();
+
+        if (likesToMe.isEmpty())return;
+
+        Like likeToMe = likesToMe.get(0);
+
+        Friendship.find.where().or(Expr.eq("likeToUser2", like), Expr.eq("likeToUser1", like));
+
+        Friendship friendship = new Friendship();
+        friendship.setUser1(like.getWho());
+        friendship.setUser2(like.getWhom());
+        friendship.setLikeToUser2(likeToHim);
+        friendship.setLikeToUser1(likeToMe);
+        friendship.setUser1Delivered(false);
+        friendship.setUser2Delivered(false);
+        friendship.save();
+        friendship.refresh();
+
+        if (outStream != null)
+            outStream.write(Json.stringify(Json.toJson(friendship)));
     }
 
 
@@ -323,19 +431,23 @@ public class Application extends Controller {
      * Handle the chat websocket.
      */
     public static WebSocket<JsonNode> chat(final String username) {
-        return new WebSocket<JsonNode>() {
+        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
 
             // Called when the Websocket Handshake is done.
-            public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
+            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
 
                 // Join the chat room.
                 try {
                     ChatRoom.join(username, in, out);
+                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
+                    out.write(ok);
+                    ChatRoom.remoteMessage("connected");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         };
+        return websocket;
     }
 
     public static Result updateLike() {
@@ -361,18 +473,47 @@ public class Application extends Controller {
 
         User user = User.find.byId(user_id);
 
-        List<Friendship> friendships = Friendship.find.where().eq("whom", user).findList();
+        List<Friendship> friendships = Friendship.find.where()
+                .or(Expr.eq("user1", user),Expr.eq("user2", user)).findList();
 
         return friendshipsStatusBuilder.getResponseStatus(friendships);
-
     }
 
     public static Result updateFriendship() {
-        return Results.TODO;
+        StatusBuilder<Friendship> settingsBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Friendship friendshipJson = Json.fromJson(body, Friendship.class);
+
+        Friendship friendship = Friendship.find.byId(friendshipJson.getID());
+
+        friendship.setUser1Delivered(friendshipJson.getUser1Delivered());
+
+        friendship.setUser2Delivered(friendshipJson.getUser2Delivered());
+
+        friendship.update();
+
+        if (friendship != null)
+            return settingsBuilder.getResponseStatus(friendship);
+
+        return settingsBuilder.getErrorStatus("Settings is not found..");
     }
 
     public static Result getFromFriendship() {
-        return Results.TODO;
+        StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<>();
+
+        JsonNode body = request().body().asJson();
+
+        Friendship friendship = Json.fromJson(body, Friendship.class);
+
+        List<Message> messageList = Message.find.where().or(Expr.and(Expr.eq("user1", friendship.getUser1()), Expr.eq("user2", friendship.getUser2())),
+                Expr.and(Expr.eq("usee2", friendship.getUser1()), Expr.eq("user1", friendship.getUser2()))).findList();
+
+        if (messageList != null)
+            return messagesStatusBuilder.getResponseStatus(messageList);
+
+        return messagesStatusBuilder.getErrorStatus("Location is not found.");
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -409,10 +550,7 @@ public class Application extends Controller {
         User user = User.find.byId(user_id);
 
         user.setSettings(settings);
-//        Settings settings1 = user.getSettings();
-//
-//        user.setSettings(settings);
-//
+
         user.update();
 
         if (settings != null)
@@ -435,7 +573,7 @@ public class Application extends Controller {
         List<Like> list = Like.find.where()
                 .eq("who", user)
                 .eq("result", false)
-                .setMaxRows(user!=null && user.getVip_status()?10:1)
+                .setMaxRows(user != null && user.getVip_status() ? 10 : 1)
                 .findList();
 
 

@@ -1,6 +1,5 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
@@ -21,46 +20,77 @@ public class Friendship extends Model implements BasicModel<Long> {
 
     @Id
     @Basic
-    Long ID;
+    public Long ID;
 
     @Basic
     @Constraints.Required
-    @ManyToOne(fetch = FetchType.LAZY)
-    User who;
-
-    @JsonProperty("who_id")
-    public Long getWhoId(){
-        if (who != null){
-            return who.getKey();
-        }
-        else {
-            return null;
-        }
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    User user1;
+//
+//    @JsonProperty("who_id")
+//    public Long getWhoId(){
+//        if (user1 != null){
+//            return user1.getKey();
+//        }
+//        else {
+//            return null;
+//        }
+//    }
 
     @Basic
     @Constraints.Required
-    @ManyToOne(fetch = FetchType.LAZY)
-    User whom;
+    @ManyToOne(fetch = FetchType.EAGER)
+    User user2;
+//
+//    @JsonProperty("whom_id")
+//    public Long getWhomId(){
+//        if (user2 != null){
+//            return user2.getKey();
+//        }
+//        else {
+//            return null;
+//        }
+//    }
 
-    @JsonProperty("whom_id")
-    public Long getWhomId(){
-        if (whom != null){
-            return whom.getKey();
-        }
-        else {
-            return null;
-        }
+
+    @Basic
+    @OneToOne(fetch = FetchType.EAGER)
+    public Like likeToUser1;
+
+    @Basic
+    @OneToOne(fetch = FetchType.EAGER)
+    public Like likeToUser2;
+
+    @Basic
+    public boolean user1Delivered;
+
+    @Basic
+    public boolean user2Delivered;
+
+    public boolean getUser1Delivered() {
+        return user1Delivered;
     }
 
-    @Basic
-    Boolean delivered;
+    public boolean getUser2Delivered() {
+        return user2Delivered;
+    }
 
-    @Basic
-    public Like likeToMe;
+    public Like getLikeToUser1() {
+        return likeToUser1;
+    }
 
-    @Basic
-    public Like likeToHim;
+    public void setLikeToUser1(Like likeToUser1) {
+        this.likeToUser1 = likeToUser1;
+    }
+
+
+    public Like getLikeToUser2() {
+        return likeToUser2;
+    }
+
+    public void setLikeToUser2(Like likeToUser2) {
+        this.likeToUser2 = likeToUser2;
+    }
 
     @Override
     public Long getKey() {
@@ -72,29 +102,37 @@ public class Friendship extends Model implements BasicModel<Long> {
           ID = aLong;
     }
 
-    public User getWho() {
-        return who;
+    public User getUser1() {
+        return user1;
     }
 
-    public void setWho(User who) {
-        this.who = who;
+    public void setUser1(User user1) {
+        this.user1 = user1;
     }
 
-    public User getWhom() {
-        return whom;
+    public User getUser2() {
+        return user2;
     }
 
-    public void setWhom(User whom) {
-        this.whom = whom;
+    public void setUser2(User user2) {
+        this.user2 = user2;
     }
 
-    public Boolean getDelivered() {
-        return delivered;
+    public void setUser1Delivered(boolean b) {
+
+        this.user1Delivered = b;
     }
 
-    public void setDelivered(Boolean delivered) {
-        this.delivered = delivered;
+    public void setUser2Delivered(boolean b) {
+
+        this.user2Delivered = b;
     }
 
+    public Long getID() {
+        return ID;
+    }
 
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
 }
