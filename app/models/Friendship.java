@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
@@ -20,6 +22,8 @@ public class Friendship extends Model implements BasicModel<Long> {
 
     @Id
     @Basic
+    @JsonSerialize
+    @JsonDeserialize
     public Long ID;
 
     @Basic

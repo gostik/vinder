@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
@@ -22,6 +24,8 @@ public class Location {
 
     @Id
     @Basic
+    @JsonSerialize
+    @JsonDeserialize
     private Long ID;
 
     @Basic

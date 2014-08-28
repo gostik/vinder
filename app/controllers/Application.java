@@ -5,6 +5,7 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
+import org.joda.time.DateTime;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -12,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 
+import java.util.Date;
 import java.util.List;
 
 public class Application extends Controller {
@@ -79,7 +81,7 @@ public class Application extends Controller {
         User user = User.find.byId(id);
 
         if (user == null)
-            return userStatusBuilder.getErrorStatus("User with id=" + id + " not found");
+            return userStatusBuilder.getErrorStatus("Пользователь не найден");
         Status responseStatus = userStatusBuilder.getResponseStatus(user);
 
         return responseStatus;
@@ -92,8 +94,11 @@ public class Application extends Controller {
 
         User user = User.find.byId(id);
 
+        user.setUpdatedDate(new Date());
+        user.save();
+
         if (user == null)
-            return photoStatusBuilder.getErrorStatus("User with id=" + id + " not found");
+            return photoStatusBuilder.getErrorStatus("Пользователь не найден");
 
         Settings settings = user.getSettings();
         settings.refresh();
@@ -125,7 +130,7 @@ public class Application extends Controller {
             }
         }
 
-        return photoStatusBuilder.getErrorStatus("Photo not found");
+        return photoStatusBuilder.getErrorStatus("Больше фотографий не найдено");
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -140,7 +145,7 @@ public class Application extends Controller {
         int rowCount = User.find.where().eq("uid", user.getUid()).findRowCount();
 
         if (rowCount > 0)
-            return userStatusBuilder.getErrorStatus("User with uid=" + user.getUid() + " already exists");
+            return userStatusBuilder.getErrorStatus("Пользователь уже существует");
 
         user.save();
         user.refresh();
@@ -162,7 +167,7 @@ public class Application extends Controller {
         User oldUser = User.find.byId(id);
 
         if (oldUser == null)
-            return userStatusBuilder.getErrorStatus("User with uid=" + newUser.getUid() + " not exists");
+            return userStatusBuilder.getErrorStatus("Пользователь не существует");
 
         oldUser.update(newUser);
 
@@ -181,7 +186,7 @@ public class Application extends Controller {
         User user = User.find.where().eq("uid", uid).findUnique();
 
         if (user == null)
-            return userStatusBuilder.getErrorStatus("User with uid=" + uid + " not exists");
+            return userStatusBuilder.getErrorStatus("Пользователь не существует");
 
         user.refresh();
 
@@ -199,7 +204,7 @@ public class Application extends Controller {
         List<Photo> all = Photo.find.all();
 
         if (user == null)
-            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " not found");
+            return photoStatusBuilder.getErrorStatus("Пользователь не существует");
 
         Photo photo = Json.fromJson(body, Photo.class);
 
@@ -207,7 +212,7 @@ public class Application extends Controller {
 
 
         if (rowCount > 0)
-            return photoStatusBuilder.getErrorStatus("Photo with url=" + photo.getUrl75() + " already exists");
+            return photoStatusBuilder.getErrorStatus("Фото уже существует");
 
         photo.setUser(user);
         photo.save();
@@ -225,7 +230,7 @@ public class Application extends Controller {
         Photo photo = Photo.find.byId(id);
 
         if (photo == null)
-            return photoStatusBuilder.getErrorStatus("Photo with id=" + id + " not exists");
+            return photoStatusBuilder.getErrorStatus("Фото не существует");
 
         photo.delete();
 
@@ -241,7 +246,7 @@ public class Application extends Controller {
         Photo photo = Photo.find.byId(id);
 
         if (photo == null)
-            return photoStatusBuilder.getErrorStatus("Photo with id=" + id + " not exists");
+            return photoStatusBuilder.getErrorStatus("Фото не существует");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(photo);
 
@@ -255,12 +260,12 @@ public class Application extends Controller {
         User user = User.find.byId(user_id);
 
         if (user == null)
-            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " was not found");
+            return photoStatusBuilder.getErrorStatus("Пользователя не существует");
         user.refresh();
         List<Photo> photos = user.getPhotos();
 
         if (photos == null)
-            return photoStatusBuilder.getErrorStatus("User with id=" + user_id + " has not photos");
+            return photoStatusBuilder.getErrorStatus("У пользователя нет фото");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(photos);
 
@@ -299,7 +304,7 @@ public class Application extends Controller {
                 .findList();
 
         if (messages == null || messages.isEmpty())
-            return userStatusBuilder.getErrorStatus("Messages with who_id=" + who_id + " whom_id=" + whom_id + " not exists");
+            return userStatusBuilder.getErrorStatus("Сообщеения не существует");
 
         Status responseStatus = userStatusBuilder.getResponseStatus(messages);
 
@@ -313,7 +318,7 @@ public class Application extends Controller {
         Message message = Message.find.byId(id);
 
         if (message == null)
-            return photoStatusBuilder.getErrorStatus("Message with id=" + id + " not exists");
+            return photoStatusBuilder.getErrorStatus("Сообщеения не существует");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(message);
 
@@ -327,7 +332,7 @@ public class Application extends Controller {
         Like like = Like.find.byId(id);
 
         if (like == null)
-            return photoStatusBuilder.getErrorStatus("Like with id=" + id + " not exists");
+            return photoStatusBuilder.getErrorStatus("Лайка не существует");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(like);
 
@@ -344,7 +349,7 @@ public class Application extends Controller {
                 .findList();
 
         if (likes == null || likes.isEmpty())
-            return userStatusBuilder.getErrorStatus("Likes with who_id=" + who_id + " whom_id=" + whom_id + " not exists");
+            return userStatusBuilder.getErrorStatus("Лайка не существует");
 
         Status responseStatus = userStatusBuilder.getResponseStatus(likes);
 
@@ -367,7 +372,7 @@ public class Application extends Controller {
                 .findList();
 
         if (list.size() > 0)
-            return messageStatusBuilder.getErrorStatus("Same like already exists: who:" + like.getWho() + "\n whom:" + like.getWhom());
+            return messageStatusBuilder.getErrorStatus("Вы уже голосовали за эту фотографию");
 
         like.save();
         like.refresh();
@@ -546,12 +551,13 @@ public class Application extends Controller {
         JsonNode body = request().body().asJson();
 
         Settings settings = Json.fromJson(body, Settings.class);
+//
+//        settings.save();
+////
+//        User user = User.find.byId(user_id);
 
-        User user = User.find.byId(user_id);
+        settings.update();
 
-        user.setSettings(settings);
-
-        user.update();
 
         if (settings != null)
             return settingsBuilder.getResponseStatus(settings);
@@ -601,7 +607,7 @@ public class Application extends Controller {
 
             result.put("reason", reason);
 
-            return badRequest(result);
+            return notFound("dfdfd");
         }
     }
 }

@@ -3,6 +3,8 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
@@ -10,6 +12,7 @@ import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,6 +32,12 @@ public class Message extends Model implements BasicModel<Long> {
 
     @Basic
     @JsonIgnore
+    @JsonSerialize(using=JsonDateSerializer.class)
+    @JsonDeserialize(using = JsonDateDeserializer.class)
+    Date createdAt;
+
+    @Basic
+    @JsonIgnore
     User who;
 
     @JsonProperty("who_id")
@@ -43,6 +52,22 @@ public class Message extends Model implements BasicModel<Long> {
     @Basic
     @JsonIgnore
     User whom;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     @JsonProperty("whom_id")
     public Long getWhomId() {

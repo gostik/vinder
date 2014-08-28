@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
@@ -28,7 +30,9 @@ public class Settings extends Model implements BasicModel<Long> {
 
     @Id
     @Basic
-    private Long ID;
+    @JsonSerialize
+    @JsonProperty("ID")
+    private Long key;
 
     @Basic
     Boolean filter_by_pro;
@@ -62,13 +66,13 @@ public class Settings extends Model implements BasicModel<Long> {
 
     @Override
     public Long getKey() {
-        return ID;
+        return key;
     }
 
     @Override
     public void setKey(Long key) {
 
-        this.ID = key;
+        this.key = key;
     }
 
     public void setFilter_by_pro(Boolean filter_by_pro) {

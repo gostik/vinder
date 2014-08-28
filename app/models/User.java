@@ -1,6 +1,8 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.joda.time.DateTime;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -8,6 +10,7 @@ import play.utils.dao.BasicModel;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +29,7 @@ public class User extends Model implements BasicModel<Long> {
 
     @Basic
     @Id
+    @JsonSerialize
     private Long ID;
 
     @Basic
@@ -44,11 +48,14 @@ public class User extends Model implements BasicModel<Long> {
     private Long uid;
 
     @Basic
-    private DateTime createdDate;
+    @JsonSerialize(using=JsonDateSerializer.class)
+    @JsonDeserialize(using = JsonDateDeserializer.class)
+    private Date createdDate;
 
     @Basic
-    @Constraints.Required
-    private DateTime updatedDate;
+    @JsonSerialize(using=JsonDateSerializer.class)
+    @JsonDeserialize(using = JsonDateDeserializer.class)
+    private Date updatedDate;
 
     @Basic
     private Integer age;
@@ -138,19 +145,19 @@ public class User extends Model implements BasicModel<Long> {
         this.uid = uid;
     }
 
-    public DateTime getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(DateTime createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
-    public DateTime getUpdatedDate() {
+    public Date getUpdatedDate() {
         return updatedDate;
     }
 
-    public void setUpdatedDate(DateTime updatedDate) {
+    public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
     }
 

@@ -1,5 +1,7 @@
 package models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
@@ -20,6 +22,8 @@ public class Photo extends Model implements BasicModel<Long> {
 
     @Id
     @Basic
+    @JsonSerialize
+    @JsonDeserialize
     public Long ID;
 
     @Basic
