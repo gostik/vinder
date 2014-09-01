@@ -43,6 +43,10 @@ create table locations (
 
 create table messages (
   id                        bigint not null,
+  created_at                timestamp,
+  who_id                    bigint,
+  whom_id                   bigint,
+  friendship_id             bigint,
   message                   varchar(255),
   constraint pk_messages primary key (id))
 ;
@@ -60,7 +64,7 @@ create table photos (
 ;
 
 create table settings (
-  id                        bigint not null,
+  key                       bigint not null,
   filter_by_pro             boolean,
   filter_is_pro             boolean,
   sex                       integer,
@@ -68,7 +72,7 @@ create table settings (
   max_age                   integer,
   range_in_km               integer,
   hide_age                  boolean,
-  constraint pk_settings primary key (id))
+  constraint pk_settings primary key (key))
 ;
 
 create table simple (
@@ -86,7 +90,7 @@ create table users (
   created_date              timestamp,
   updated_date              timestamp,
   age                       integer,
-  settings_id               bigint,
+  settings_key              bigint,
   pro_status                boolean,
   vip_status                boolean,
   constraint pk_users primary key (id))
@@ -130,10 +134,16 @@ alter table likes add constraint fk_likes_whom_6 foreign key (whom_id) reference
 create index ix_likes_whom_6 on likes (whom_id);
 alter table likes add constraint fk_likes_photo_7 foreign key (photo_id) references photos (id) on delete restrict on update restrict;
 create index ix_likes_photo_7 on likes (photo_id);
-alter table photos add constraint fk_photos_user_8 foreign key (user_id) references users (id) on delete restrict on update restrict;
-create index ix_photos_user_8 on photos (user_id);
-alter table users add constraint fk_users_settings_9 foreign key (settings_id) references settings (id) on delete restrict on update restrict;
-create index ix_users_settings_9 on users (settings_id);
+alter table messages add constraint fk_messages_who_8 foreign key (who_id) references users (id) on delete restrict on update restrict;
+create index ix_messages_who_8 on messages (who_id);
+alter table messages add constraint fk_messages_whom_9 foreign key (whom_id) references users (id) on delete restrict on update restrict;
+create index ix_messages_whom_9 on messages (whom_id);
+alter table messages add constraint fk_messages_friendship_10 foreign key (friendship_id) references friendships (id) on delete restrict on update restrict;
+create index ix_messages_friendship_10 on messages (friendship_id);
+alter table photos add constraint fk_photos_user_11 foreign key (user_id) references users (id) on delete restrict on update restrict;
+create index ix_photos_user_11 on photos (user_id);
+alter table users add constraint fk_users_settings_12 foreign key (settings_key) references settings (key) on delete restrict on update restrict;
+create index ix_users_settings_12 on users (settings_key);
 
 
 

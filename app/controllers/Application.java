@@ -44,7 +44,7 @@ public class Application extends Controller {
 
                         JsonNode messageJson = parse.get("message");
 
-                        if (messageJson==null)
+                        if (messageJson == null)
                             return;
 
                         Message message = Json.fromJson(messageJson, Message.class);
@@ -276,6 +276,7 @@ public class Application extends Controller {
     public static Result newMessage() {
         StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<>();
 
+        //Message as = request().body().as(Message.class);
         JsonNode body = request().body().asJson();
 
         Message message = Json.fromJson(body, Message.class);
@@ -411,7 +412,7 @@ public class Application extends Controller {
                 .eq("who", like.getWhom())
                 .findList();
 
-        if (likesToMe.isEmpty())return;
+        if (likesToMe.isEmpty()) return;
 
         Like likeToMe = likesToMe.get(0);
 
@@ -479,7 +480,7 @@ public class Application extends Controller {
         User user = User.find.byId(user_id);
 
         List<Friendship> friendships = Friendship.find.where()
-                .or(Expr.eq("user1", user),Expr.eq("user2", user)).findList();
+                .or(Expr.eq("user1", user), Expr.eq("user2", user)).findList();
 
         return friendshipsStatusBuilder.getResponseStatus(friendships);
     }
@@ -512,8 +513,14 @@ public class Application extends Controller {
 
         Friendship friendship = Json.fromJson(body, Friendship.class);
 
-        List<Message> messageList = Message.find.where().or(Expr.and(Expr.eq("user1", friendship.getUser1()), Expr.eq("user2", friendship.getUser2())),
-                Expr.and(Expr.eq("usee2", friendship.getUser1()), Expr.eq("user1", friendship.getUser2()))).findList();
+        List<Message> messageList = Message.find.where()
+                .or(
+                        Expr.and(Expr.eq("who", friendship.getUser1()),
+                                 Expr.eq("whom", friendship.getUser2())),
+                        Expr.and(Expr.eq("whom", friendship.getUser1()),
+                                 Expr.eq("who", friendship.getUser2())))
+                .findList();
+
 
         if (messageList != null)
             return messagesStatusBuilder.getResponseStatus(messageList);
@@ -607,7 +614,7 @@ public class Application extends Controller {
 
             result.put("reason", reason);
 
-            return notFound("dfdfd");
+            return badRequest();
         }
     }
 }

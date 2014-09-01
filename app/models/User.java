@@ -30,6 +30,7 @@ public class User extends Model implements BasicModel<Long> {
     @Basic
     @Id
     @JsonSerialize
+    @JsonDeserialize
     private Long ID;
 
     @Basic
