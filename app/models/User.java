@@ -99,6 +99,7 @@ public class User extends Model implements BasicModel<Long> {
         this.vip_status = vip_status;
     }
 
+
     //    @OneToMany
 //    List<Like> likeList;
 //
