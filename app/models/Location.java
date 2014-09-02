@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "locations")
 public class Location {
 
-    public static Model.Finder<Long, Message> find = new Model.Finder<>(Long.class, Message.class);
+    public static Model.Finder<Long, Message> find = new Model.Finder<Long, Message>(Long.class, Message.class);
 
     @Id
     @Basic

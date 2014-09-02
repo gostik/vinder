@@ -20,7 +20,7 @@ import javax.persistence.*;
 public class Like extends Model implements BasicModel<Long> {
 
 
-    public static Finder<Long, Like> find= new Model.Finder<>(Long.class, Like.class);
+    public static Finder<Long, Like> find= new Model.Finder<Long, Like>(Long.class, Like.class);
 
     @Id
     @Basic

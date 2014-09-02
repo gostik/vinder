@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Table(name = "friendships")
 public class Friendship extends Model implements BasicModel<Long> {
 
-    public static Finder<Long, Friendship> find= new Model.Finder<>(Long.class, Friendship.class);
+    public static Finder<Long, Friendship> find= new Model.Finder<Long, Friendship>(Long.class, Friendship.class);
 
     @Id
     @Basic

@@ -24,7 +24,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends Model implements BasicModel<Long> {
     //@JsonIgnore
-    public static Finder<Long, User> find = new Model.Finder<>(Long.class, User.class);
+    public static Finder<Long, User> find = new Model.Finder<Long, User>(Long.class, User.class);
 
 
     @Basic

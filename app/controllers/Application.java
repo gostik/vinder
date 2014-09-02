@@ -136,7 +136,7 @@ public class Application extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newUser() {
 
-        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<User>();
 
         JsonNode body = request().body().asJson();
 
@@ -158,7 +158,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateUser(long id) {
-        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<User>();
 
         JsonNode body = request().body().asJson();
 
@@ -181,7 +181,7 @@ public class Application extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUserUid(long uid) {
 
-        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<User>();
 
         User user = User.find.where().eq("uid", uid).findUnique();
 
@@ -195,7 +195,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result createPhoto(Long user_id) {
-        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<Photo>();
 
         JsonNode body = request().body().asJson();
 
@@ -225,7 +225,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result deletePhoto(long id) {
-        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<Photo>();
 
         Photo photo = Photo.find.byId(id);
 
@@ -241,7 +241,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getPhoto(long id) {
-        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<Photo>();
 
         Photo photo = Photo.find.byId(id);
 
@@ -255,7 +255,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getPhotos(long user_id) {
-        StatusBuilder<List<Photo>> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Photo>> photoStatusBuilder = new StatusBuilder<List<Photo>>();
 
         User user = User.find.byId(user_id);
 
@@ -274,7 +274,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newMessage() {
-        StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<Message>();
 
         //Message as = request().body().as(Message.class);
         JsonNode body = request().body().asJson();
@@ -296,7 +296,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getMessages(long who_id, long whom_id) {
-        StatusBuilder<List<Message>> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Message>> userStatusBuilder = new StatusBuilder<List<Message>>();
 
         List<Message> messages = Message.find
                 .where()
@@ -314,7 +314,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getMessage(long id) {
-        StatusBuilder<Message> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Message> photoStatusBuilder = new StatusBuilder<Message>();
 
         Message message = Message.find.byId(id);
 
@@ -328,7 +328,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getLike(long id) {
-        StatusBuilder<Like> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Like> photoStatusBuilder = new StatusBuilder<Like>();
 
         Like like = Like.find.byId(id);
 
@@ -342,7 +342,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getLikes(long who_id, long whom_id) {
-        StatusBuilder<List<Like>> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Like>> userStatusBuilder = new StatusBuilder<List<Like>>();
 
         List<Like> likes = Like.find.where()
                 .eq("who", User.find.byId(who_id))
@@ -359,7 +359,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newLike() {
-        StatusBuilder<Like> messageStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Like> messageStatusBuilder = new StatusBuilder<Like>();
 
         JsonNode body = request().body().asJson();
 
@@ -457,7 +457,7 @@ public class Application extends Controller {
     }
 
     public static Result updateLike() {
-        StatusBuilder<Like> likeStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Like> likeStatusBuilder = new StatusBuilder<Like>();
 
         JsonNode body = request().body().asJson();
 
@@ -475,7 +475,7 @@ public class Application extends Controller {
 
     public static Result getFriendshipsToMe(long user_id) {
 
-        StatusBuilder<List<Friendship>> friendshipsStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Friendship>> friendshipsStatusBuilder = new StatusBuilder<List<Friendship>>();
 
         User user = User.find.byId(user_id);
 
@@ -486,7 +486,7 @@ public class Application extends Controller {
     }
 
     public static Result updateFriendship() {
-        StatusBuilder<Friendship> settingsBuilder = new StatusBuilder<>();
+        StatusBuilder<Friendship> settingsBuilder = new StatusBuilder<Friendship>();
 
         JsonNode body = request().body().asJson();
 
@@ -533,7 +533,7 @@ public class Application extends Controller {
 
         User user = User.find.byId(user_id);
 
-        StatusBuilder<Location> locationStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Location> locationStatusBuilder = new StatusBuilder<Location>();
 
         JsonNode body = request().body().asJson();
 
@@ -553,7 +553,7 @@ public class Application extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public static Result updateSettings(long user_id) {
 
-        StatusBuilder<Settings> settingsBuilder = new StatusBuilder<>();
+        StatusBuilder<Settings> settingsBuilder = new StatusBuilder<Settings>();
 
         JsonNode body = request().body().asJson();
 
@@ -578,7 +578,7 @@ public class Application extends Controller {
         User user = User.find.byId(user_id);
 
 
-        StatusBuilder<List<Like>> likeStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Like>> likeStatusBuilder = new StatusBuilder<List<Like>>();
 
         if (user == null)
             likeStatusBuilder.getErrorStatus("User not found with id " + user_id);

@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Table(name = "settings")
 public class Settings extends Model implements BasicModel<Long> {
 
-    public static Finder<Long, Settings> find = new Model.Finder<>(Long.class, Settings.class);
+    public static Finder<Long, Settings> find = new Model.Finder<Long, Settings>(Long.class, Settings.class);
 
     @Id
     @Basic
