@@ -76,7 +76,7 @@ public class Application extends Controller {
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUser(Long id) {
-        StatusBuilder<User> userStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<User> userStatusBuilder = new StatusBuilder<User>();
 
         User user = User.find.byId(id);
 
@@ -90,7 +90,7 @@ public class Application extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getNextPhoto(Long id) {
 
-        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<Photo> photoStatusBuilder = new StatusBuilder<Photo>();
 
         User user = User.find.byId(id);
 
@@ -507,7 +507,7 @@ public class Application extends Controller {
     }
 
     public static Result getFromFriendship() {
-        StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<>();
+        StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<List<Message>>();
 
         JsonNode body = request().body().asJson();
 
