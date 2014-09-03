@@ -13,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 
+import java.beans.Expression;
 import java.util.Date;
 import java.util.List;
 
@@ -107,10 +108,13 @@ public class Application extends Controller {
                 .between("age", settings.getMin_age(), settings.getMax_age())
                 .ne("id", id)
                         //sex == sex in settngs or sex ==0
-                .disjunction().add(Expr.eq("sex", settings.getSex())).add(Expr.eq("sex", 0)).conjunction();
+                .disjunction().add(Expr.eq("sex", settings.getSex())).add(Expr.eq("sex", 0));
+        query.findList();
 
         if (settings.getFilter_by_pro()) {
-            query = query.disjunction().add(Expr.eq("pro_status", user.getPro_status())).add(Expr.eq("pro_status", user.getVip_status()));
+            query = query.where().disjunction()
+                    .add(Expr.eq("pro_status", user.getPro_status()))
+                    .add(Expr.eq("pro_status", user.getVip_status()));
         }
 
         List<User> userList = query.findList();
