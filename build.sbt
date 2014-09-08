@@ -7,7 +7,7 @@ libraryDependencies ++= Seq(
   "play2-crud" % "play2-crud_2.10" % "0.7.3-SNAPSHOT",
   "com.typesafe" %% "play-plugins-redis" % "2.2.1",
   "org.atmosphere" % "atmosphere-runtime" % "2.0.0.RC3",
-  "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+  "org.postgresql" % "postgresql" % "9.2-1002-jdbc4"
 )
 
 play.Project.playJavaSettings

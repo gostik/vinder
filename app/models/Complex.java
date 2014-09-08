@@ -37,7 +37,7 @@ public class Complex extends Model implements BasicModel<Long> {
 
 	@Basic
 	@Required
-	private Double doubleField;
+	private String doubleField;
 
 	@Basic
 	@Required
@@ -71,11 +71,11 @@ public class Complex extends Model implements BasicModel<Long> {
 		this.integerField = integerField;
 	}
 
-	public Double getDoubleField() {
+	public String getDoubleField() {
 		return doubleField;
 	}
 
-	public void setDoubleField(Double doubleField) {
+	public void setDoubleField(String doubleField) {
 		this.doubleField = doubleField;
 	}
 

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,11 +27,11 @@ public class Location {
 
     @Basic
     @Constraints.Required
-    private Double latitude;
+    private String latitude;
 
     @Basic
     @Constraints.Required
-    private Double longitude;
+    private String longitude;
 
     public Long getID() {
         return ID;
@@ -44,19 +41,19 @@ public class Location {
         this.ID = ID;
     }
 
-    public Double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 }
