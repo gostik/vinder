@@ -27,8 +27,6 @@ public class Application extends Controller {
 
     public static WebSocket<String> index() {
 
-        if (socket != null) return socket;
-
         socket = new WebSocket<String>() {
 
             // Called when the Websocket Handshake is done.
