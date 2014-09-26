@@ -47,4 +47,3 @@ public class Simple extends Model implements BasicModel<Long> {
         return "Simple [key=" + key + ", name=" + name + "]";
     }
 }
-//heroku addons:add heroku-postgresql
