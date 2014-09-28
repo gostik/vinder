@@ -121,6 +121,14 @@ public class Application extends Controller {
 
         for (User userForCheck : userList) {
 
+            List<Like> disliked = Like.find.where()
+                    .eq("who", user)
+                    .eq("whom",userForCheck)
+                    .eq("result", false)
+                    .findList();
+
+            if (!disliked.isEmpty()) continue;
+
             //получаем фотки пользователя
             List<Photo> photos = Photo.find.where().eq("user", userForCheck).findList();
 
@@ -578,7 +586,7 @@ public class Application extends Controller {
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result getDisliked(long user_id) {
+    public static Result  getDisliked(long user_id) {
         User user = User.find.byId(user_id);
 
 
