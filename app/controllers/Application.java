@@ -43,6 +43,8 @@ public class Application extends Controller {
 
                         JsonNode parse = Json.parse(event);
 
+                        outStream.write(event);
+
                         JsonNode messageJson = parse.get("message");
 
                         if (messageJson == null)
@@ -52,7 +54,7 @@ public class Application extends Controller {
 
                         message.save();
 
-                        out.write(event);
+                        outStream.write(event);
 
                         System.out.print(event);
 
