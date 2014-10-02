@@ -19,61 +19,61 @@ import java.util.List;
 
 public class Application extends Controller {
 
-    private static WebSocket<JsonNode> chat;
-    private static WebSocket<String> socket;
-    private static WebSocket.In<String> inStream;
-    private static WebSocket.Out<String> outStream;
+//    private static WebSocket<JsonNode> chat;
+//    private static WebSocket<String> socket;
+//    private static WebSocket.In<String> inStream;
+//    private static WebSocket.Out<String> outStream;
 
-
-    public static WebSocket<String> index() {
-
-        if (socket != null) return socket;
-
-        socket = new WebSocket<String>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<String> in, final Out<String> out) {
-
-                inStream = in;
-
-                outStream = out;
-                // For each event received on the socket,
-                in.onMessage(new F.Callback<String>() {
-                    public void invoke(String event) {
-
-                        JsonNode parse = Json.parse(event);
-
-                        JsonNode messageJson = parse.get("message");
-
-                        if (messageJson == null)
-                            return;
-
-                        Message message = Json.fromJson(messageJson, Message.class);
-
-                        message.save();
-
-                        outStream.write(event);
-
-                        System.out.print(event);
-
-                    }
-                });
-
-                // When the socket is closed.
-                in.onClose(new F.Callback0() {
-                    public void invoke() {
-
-                        System.out.print("Disconnected");
-
-                    }
-                });
-
-            }
-
-        };
-
-        return socket;
-    }
+//
+//    public static WebSocket<String> index() {
+//
+//        if (socket != null) return socket;
+//
+//        socket = new WebSocket<String>() {
+//
+//            // Called when the Websocket Handshake is done.
+//            public void onReady(In<String> in, final Out<String> out) {
+//
+//                inStream = in;
+//
+//                outStream = out;
+//                // For each event received on the socket,
+//                in.onMessage(new F.Callback<String>() {
+//                    public void invoke(String event) {
+//
+//                        JsonNode parse = Json.parse(event);
+//
+//                        JsonNode messageJson = parse.get("message");
+//
+//                        if (messageJson == null)
+//                            return;
+//
+//                        Message message = Json.fromJson(messageJson, Message.class);
+//
+//                        message.save();
+//
+//                        outStream.write(event);
+//
+//                        System.out.print(event);
+//
+//                    }
+//                });
+//
+//                // When the socket is closed.
+//                in.onClose(new F.Callback0() {
+//                    public void invoke() {
+//
+//                        System.out.print("Disconnected");
+//
+//                    }
+//                });
+//
+//            }
+//
+//        };
+//
+//        return socket;
+//    }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUser(Long id) {
@@ -297,8 +297,6 @@ public class Application extends Controller {
             message.save();
             message.refresh();
 
-            if (outStream != null)
-                outStream.write(Json.stringify(Json.toJson(message)));
         }
 
         Status responseStatus = messageStatusBuilder.getResponseStatus(message);
@@ -440,8 +438,8 @@ public class Application extends Controller {
         friendship.save();
         friendship.refresh();
 
-        if (outStream != null)
-            outStream.write(Json.stringify(Json.toJson(friendship)));
+//        if (outStream != null)
+//            outStream.write(Json.stringify(Json.toJson(friendship)));
     }
 
 
