@@ -11,7 +11,7 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.WebSocket;
+//import play.mvc.WebSocket;
 
 import java.beans.Expression;
 import java.util.Date;
@@ -446,25 +446,25 @@ public class Application extends Controller {
     /**
      * Handle the chat websocket.
      */
-    public static WebSocket<JsonNode> chat(final String username) {
-        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
-
-                // Join the chat room.
-                try {
-                    ChatRoom.join(username, in, out);
-                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
-                    out.write(ok);
-                    ChatRoom.remoteMessage("connected");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        return websocket;
-    }
+//    public static WebSocket<JsonNode> chat(final String username) {
+//        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
+//
+//            // Called when the Websocket Handshake is done.
+//            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
+//
+//                // Join the chat room.
+//                try {
+//                    ChatRoom.join(username, in, out);
+//                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
+//                    out.write(ok);
+//                    ChatRoom.remoteMessage("connected");
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//        };
+//        return websocket;
+//    }
 
     public static Result updateLike() {
         StatusBuilder<Like> likeStatusBuilder = new StatusBuilder<Like>();
