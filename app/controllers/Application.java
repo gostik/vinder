@@ -285,7 +285,7 @@ public class Application extends Controller {
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result newMessage() {
+    public static Result createMessage() {
         StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<Message>();
 
         //Message as = request().body().as(Message.class);
