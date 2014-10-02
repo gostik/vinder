@@ -43,8 +43,6 @@ public class Application extends Controller {
 
                         JsonNode parse = Json.parse(event);
 
-                        outStream.write(event);
-
                         JsonNode messageJson = parse.get("message");
 
                         if (messageJson == null)
@@ -520,12 +518,12 @@ public class Application extends Controller {
         return settingsBuilder.getErrorStatus("Settings is not found..");
     }
 
-    public static Result getFromFriendship() {
+    public static Result getFromFriendship(Long friendship_id) {
         StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<List<Message>>();
 
-        JsonNode body = request().body().asJson();
+        //JsonNode body = request().body().asJson();
 
-        Friendship friendship = Json.fromJson(body, Friendship.class);
+        Friendship friendship = Friendship.find.byId(friendship_id);
 
         List<Message> messageList = Message.find.where()
                 .or(
