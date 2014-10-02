@@ -605,6 +605,10 @@ public class Application extends Controller {
 
     }
 
+    public static Result index() {
+        return play.mvc.Results.ok();
+    }
+
 
     private static class StatusBuilder<T> {
 
