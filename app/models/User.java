@@ -75,16 +75,16 @@ public class User extends Model implements BasicModel<Long> {
     @Basic
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    List<Friendship> friendships;
+    private List<Friendship> friendships;
 
     @Basic
-    public Integer QB_ID;
+    private Integer QB_ID;
 
 
     @Basic
-    public Boolean pro_status = false;
+    private Boolean pro_status = false;
     @Basic
-    public Boolean vip_status = false;
+    private Boolean vip_status = false;
 
     public Boolean getPro_status() {
         return pro_status;
