@@ -606,7 +606,7 @@ public class Application extends Controller {
     }
 
     public static Result index() {
-        return play.mvc.Results.TODO;
+        return play.mvc.Results.ok();
     }
 
 
