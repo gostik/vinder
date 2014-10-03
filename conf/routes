@@ -5,8 +5,7 @@
 # ~~~~
 
 # Home page
-# Home page
-GET         /                                      controllers.Application.index()
+#GET         /                                      controllers.Application.index()
 
 # Users
 GET         /users/get/:id                         controllers.Application.getUser(id: Long)

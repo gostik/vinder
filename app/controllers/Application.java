@@ -521,16 +521,14 @@ public class Application extends Controller {
     public static Result getFromFriendship(Long friendship_id) {
         StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<List<Message>>();
 
-        //JsonNode body = request().body().asJson();
-
         Friendship friendship = Friendship.find.byId(friendship_id);
 
         List<Message> messageList = Message.find.where()
                 .or(
                         Expr.and(Expr.eq("who", friendship.getUser1()),
-                                 Expr.eq("whom", friendship.getUser2())),
+                                Expr.eq("whom", friendship.getUser2())),
                         Expr.and(Expr.eq("whom", friendship.getUser1()),
-                                 Expr.eq("who", friendship.getUser2())))
+                                Expr.eq("who", friendship.getUser2())))
                 .findList();
 
 
@@ -629,4 +627,6 @@ public class Application extends Controller {
             return badRequest();
         }
     }
+
+
 }
