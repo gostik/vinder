@@ -11,7 +11,7 @@ import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.WebSocket;
+//import play.mvc.WebSocket;
 
 import java.beans.Expression;
 import java.util.Date;
@@ -19,61 +19,61 @@ import java.util.List;
 
 public class Application extends Controller {
 
-    private static WebSocket<JsonNode> chat;
-    private static WebSocket<String> socket;
-    private static WebSocket.In<String> inStream;
-    private static WebSocket.Out<String> outStream;
+//    private static WebSocket<JsonNode> chat;
+//    private static WebSocket<String> socket;
+//    private static WebSocket.In<String> inStream;
+//    private static WebSocket.Out<String> outStream;
 
-
-    public static WebSocket<String> index() {
-
-        if (socket != null) return socket;
-
-        socket = new WebSocket<String>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<String> in, final Out<String> out) {
-
-                inStream = in;
-
-                outStream = out;
-                // For each event received on the socket,
-                in.onMessage(new F.Callback<String>() {
-                    public void invoke(String event) {
-
-                        JsonNode parse = Json.parse(event);
-
-                        JsonNode messageJson = parse.get("message");
-
-                        if (messageJson == null)
-                            return;
-
-                        Message message = Json.fromJson(messageJson, Message.class);
-
-                        message.save();
-
-                        outStream.write(event);
-
-                        System.out.print(event);
-
-                    }
-                });
-
-                // When the socket is closed.
-                in.onClose(new F.Callback0() {
-                    public void invoke() {
-
-                        System.out.print("Disconnected");
-
-                    }
-                });
-
-            }
-
-        };
-
-        return socket;
-    }
+//
+//    public static WebSocket<String> index() {
+//
+//        if (socket != null) return socket;
+//
+//        socket = new WebSocket<String>() {
+//
+//            // Called when the Websocket Handshake is done.
+//            public void onReady(In<String> in, final Out<String> out) {
+//
+//                inStream = in;
+//
+//                outStream = out;
+//                // For each event received on the socket,
+//                in.onMessage(new F.Callback<String>() {
+//                    public void invoke(String event) {
+//
+//                        JsonNode parse = Json.parse(event);
+//
+//                        JsonNode messageJson = parse.get("message");
+//
+//                        if (messageJson == null)
+//                            return;
+//
+//                        Message message = Json.fromJson(messageJson, Message.class);
+//
+//                        message.save();
+//
+//                        outStream.write(event);
+//
+//                        System.out.print(event);
+//
+//                    }
+//                });
+//
+//                // When the socket is closed.
+//                in.onClose(new F.Callback0() {
+//                    public void invoke() {
+//
+//                        System.out.print("Disconnected");
+//
+//                    }
+//                });
+//
+//            }
+//
+//        };
+//
+//        return socket;
+//    }
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getUser(Long id) {
@@ -285,7 +285,7 @@ public class Application extends Controller {
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result newMessage() {
+    public static Result createMessage() {
         StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<Message>();
 
         //Message as = request().body().as(Message.class);
@@ -297,8 +297,6 @@ public class Application extends Controller {
             message.save();
             message.refresh();
 
-            if (outStream != null)
-                outStream.write(Json.stringify(Json.toJson(message)));
         }
 
         Status responseStatus = messageStatusBuilder.getResponseStatus(message);
@@ -440,33 +438,33 @@ public class Application extends Controller {
         friendship.save();
         friendship.refresh();
 
-        if (outStream != null)
-            outStream.write(Json.stringify(Json.toJson(friendship)));
+//        if (outStream != null)
+//            outStream.write(Json.stringify(Json.toJson(friendship)));
     }
 
 
     /**
      * Handle the chat websocket.
      */
-    public static WebSocket<JsonNode> chat(final String username) {
-        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
-
-                // Join the chat room.
-                try {
-                    ChatRoom.join(username, in, out);
-                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
-                    out.write(ok);
-                    ChatRoom.remoteMessage("connected");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        return websocket;
-    }
+//    public static WebSocket<JsonNode> chat(final String username) {
+//        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
+//
+//            // Called when the Websocket Handshake is done.
+//            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
+//
+//                // Join the chat room.
+//                try {
+//                    ChatRoom.join(username, in, out);
+//                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
+//                    out.write(ok);
+//                    ChatRoom.remoteMessage("connected");
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//        };
+//        return websocket;
+//    }
 
     public static Result updateLike() {
         StatusBuilder<Like> likeStatusBuilder = new StatusBuilder<Like>();
@@ -604,6 +602,11 @@ public class Application extends Controller {
 
 
     }
+
+    public static Result index() {
+        return play.mvc.Results.ok();
+    }
+
 
 
     private static class StatusBuilder<T> {

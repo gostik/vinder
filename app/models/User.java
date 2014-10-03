@@ -77,6 +77,9 @@ public class User extends Model implements BasicModel<Long> {
             cascade = CascadeType.ALL)
     List<Friendship> friendships;
 
+    @Basic
+    public Integer QB_ID;
+
 
     @Basic
     public Boolean pro_status = false;
@@ -220,5 +223,14 @@ public class User extends Model implements BasicModel<Long> {
 
     public void setFriendships(ArrayList<Friendship> friendships) {
         this.friendships = friendships;
+    }
+
+
+    public Integer getQB_ID() {
+        return QB_ID;
+    }
+
+    public void setQB_ID(int QB_ID) {
+        this.QB_ID = QB_ID;
     }
 }
