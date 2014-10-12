@@ -49,6 +49,9 @@ public class User extends Model implements BasicModel<Long> {
     private Long uid;
 
     @Basic
+    private String reg_id;
+
+    @Basic
     @JsonSerialize(using=JsonDateSerializer.class)
     @JsonDeserialize(using = JsonDateDeserializer.class)
     private Date createdDate;
@@ -220,5 +223,13 @@ public class User extends Model implements BasicModel<Long> {
 
     public void setFriendships(ArrayList<Friendship> friendships) {
         this.friendships = friendships;
+    }
+
+    public String getReg_id() {
+        return reg_id;
+    }
+
+    public void setReg_id(String reg_id) {
+        this.reg_id = reg_id;
     }
 }

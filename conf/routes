@@ -31,7 +31,7 @@ GET         /photos/getDisliked/:user_id           controllers.Application.getDi
 GET         /messages/get/:id                      controllers.Application.getMessage(id: Long)
 GET         /messages/get/:who_id/:whom_id         controllers.Application.getMessages(who_id: Long, whom_id: Long)
 POST        /messages/create                       controllers.Application.newMessage()
-POST        /messages/getFromFriendship            controllers.Application.getFromFriendship()
+POST        /messages/getFromFriendship/:friendship_id            controllers.Application.getFromFriendship(friendship_id : Long)
 
 #Likes
 GET         /likes/get/:id                         controllers.Application.getLike(id: Long)

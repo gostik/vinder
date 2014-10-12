@@ -87,6 +87,7 @@ create table users (
   last_name                 varchar(255),
   sex                       integer,
   uid                       bigint,
+  reg_id                    varchar(255),
   created_date              timestamp,
   updated_date              timestamp,
   age                       integer,
@@ -120,58 +121,62 @@ create sequence simple_seq;
 
 create sequence users_seq;
 
-alter table friendships add constraint fk_friendships_user1_1 foreign key (user1_id) references users (id);
+alter table friendships add constraint fk_friendships_user1_1 foreign key (user1_id) references users (id) on delete restrict on update restrict;
 create index ix_friendships_user1_1 on friendships (user1_id);
-alter table friendships add constraint fk_friendships_user2_2 foreign key (user2_id) references users (id);
+alter table friendships add constraint fk_friendships_user2_2 foreign key (user2_id) references users (id) on delete restrict on update restrict;
 create index ix_friendships_user2_2 on friendships (user2_id);
-alter table friendships add constraint fk_friendships_likeToUser1_3 foreign key (like_to_user1_id) references likes (id);
+alter table friendships add constraint fk_friendships_likeToUser1_3 foreign key (like_to_user1_id) references likes (id) on delete restrict on update restrict;
 create index ix_friendships_likeToUser1_3 on friendships (like_to_user1_id);
-alter table friendships add constraint fk_friendships_likeToUser2_4 foreign key (like_to_user2_id) references likes (id);
+alter table friendships add constraint fk_friendships_likeToUser2_4 foreign key (like_to_user2_id) references likes (id) on delete restrict on update restrict;
 create index ix_friendships_likeToUser2_4 on friendships (like_to_user2_id);
-alter table likes add constraint fk_likes_who_5 foreign key (who_id) references users (id);
+alter table likes add constraint fk_likes_who_5 foreign key (who_id) references users (id) on delete restrict on update restrict;
 create index ix_likes_who_5 on likes (who_id);
-alter table likes add constraint fk_likes_whom_6 foreign key (whom_id) references users (id);
+alter table likes add constraint fk_likes_whom_6 foreign key (whom_id) references users (id) on delete restrict on update restrict;
 create index ix_likes_whom_6 on likes (whom_id);
-alter table likes add constraint fk_likes_photo_7 foreign key (photo_id) references photos (id);
+alter table likes add constraint fk_likes_photo_7 foreign key (photo_id) references photos (id) on delete restrict on update restrict;
 create index ix_likes_photo_7 on likes (photo_id);
-alter table messages add constraint fk_messages_who_8 foreign key (who_id) references users (id);
+alter table messages add constraint fk_messages_who_8 foreign key (who_id) references users (id) on delete restrict on update restrict;
 create index ix_messages_who_8 on messages (who_id);
-alter table messages add constraint fk_messages_whom_9 foreign key (whom_id) references users (id);
+alter table messages add constraint fk_messages_whom_9 foreign key (whom_id) references users (id) on delete restrict on update restrict;
 create index ix_messages_whom_9 on messages (whom_id);
-alter table messages add constraint fk_messages_friendship_10 foreign key (friendship_id) references friendships (id);
+alter table messages add constraint fk_messages_friendship_10 foreign key (friendship_id) references friendships (id) on delete restrict on update restrict;
 create index ix_messages_friendship_10 on messages (friendship_id);
-alter table photos add constraint fk_photos_user_11 foreign key (user_id) references users (id);
+alter table photos add constraint fk_photos_user_11 foreign key (user_id) references users (id) on delete restrict on update restrict;
 create index ix_photos_user_11 on photos (user_id);
-alter table users add constraint fk_users_settings_12 foreign key (settings_key) references settings (key);
+alter table users add constraint fk_users_settings_12 foreign key (settings_key) references settings (key) on delete restrict on update restrict;
 create index ix_users_settings_12 on users (settings_key);
 
 
 
-alter table users_friendships add constraint fk_users_friendships_users_01 foreign key (users_id) references users (id);
+alter table users_friendships add constraint fk_users_friendships_users_01 foreign key (users_id) references users (id) on delete restrict on update restrict;
 
-alter table users_friendships add constraint fk_users_friendships_friendsh_02 foreign key (friendships_id) references friendships (id);
+alter table users_friendships add constraint fk_users_friendships_friendsh_02 foreign key (friendships_id) references friendships (id) on delete restrict on update restrict;
 
 # --- !Downs
 
-drop table if exists complex cascade;
+SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table if exists friendships cascade;
+drop table if exists complex;
 
-drop table if exists likes cascade;
+drop table if exists friendships;
 
-drop table if exists locations cascade;
+drop table if exists likes;
 
-drop table if exists messages cascade;
+drop table if exists locations;
 
-drop table if exists photos cascade;
+drop table if exists messages;
 
-drop table if exists settings cascade;
+drop table if exists photos;
 
-drop table if exists simple cascade;
+drop table if exists settings;
 
-drop table if exists users cascade;
+drop table if exists simple;
 
-drop table if exists users_friendships cascade;
+drop table if exists users;
+
+drop table if exists users_friendships;
+
+SET REFERENTIAL_INTEGRITY TRUE;
 
 drop sequence if exists complex_seq;
 

@@ -6,71 +6,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
 import org.joda.time.DateTime;
+import play.api.libs.iteratee.Concurrent;
+import play.api.libs.ws.Response;
+import play.api.libs.ws.WS;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import scala.Function1;
+import scala.Tuple2;
+import scala.collection.Seq;
+import scala.collection.immutable.LinearSeq;
 
 import java.beans.Expression;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 public class Application extends Controller {
 
-    private static WebSocket<JsonNode> chat;
-    private static WebSocket<String> socket;
-    private static WebSocket.In<String> inStream;
-    private static WebSocket.Out<String> outStream;
 
 
-    public static WebSocket<String> index() {
+    public static Result index() {
 
-        socket = new WebSocket<String>() {
 
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<String> in, final Out<String> out) {
-
-                inStream = in;
-
-                outStream = out;
-                // For each event received on the socket,
-                in.onMessage(new F.Callback<String>() {
-                    public void invoke(String event) {
-
-                        JsonNode parse = Json.parse(event);
-
-                        JsonNode messageJson = parse.get("message");
-
-                        if (messageJson == null)
-                            return;
-
-                        Message message = Json.fromJson(messageJson, Message.class);
-
-                        message.save();
-
-                        out.write(event);
-
-                        System.out.print(event);
-
-                    }
-                });
-
-                // When the socket is closed.
-                in.onClose(new F.Callback0() {
-                    public void invoke() {
-
-                        System.out.print("Disconnected");
-
-                    }
-                });
-
-            }
-
-        };
-
-        return socket;
+        return ok();
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -274,6 +236,7 @@ public class Application extends Controller {
         return responseStatus;
     }
 
+    static GCMSender gcmSender = new GCMSender();
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newMessage() {
         StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<Message>();
@@ -287,13 +250,22 @@ public class Application extends Controller {
             message.save();
             message.refresh();
 
-            if (outStream != null)
-                outStream.write(Json.stringify(Json.toJson(message)));
+            sendToGcm(message);
         }
+
+
 
         Status responseStatus = messageStatusBuilder.getResponseStatus(message);
 
         return responseStatus;
+    }
+
+    private static void sendToGcm(Message message) {
+
+        Notification notification = new Notification(message.getWhom().getReg_id(),message);
+
+        JsonNode jsonNode = Json.toJson(notification);
+        gcmSender.sendMessageViaGCM(jsonNode.toString());
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -307,7 +279,7 @@ public class Application extends Controller {
                 .findList();
 
         if (messages == null || messages.isEmpty())
-            return userStatusBuilder.getErrorStatus("Сообщеения не существует");
+            return userStatusBuilder.getErrorStatus("Сообщения не существует");
 
         Status responseStatus = userStatusBuilder.getResponseStatus(messages);
 
@@ -321,7 +293,7 @@ public class Application extends Controller {
         Message message = Message.find.byId(id);
 
         if (message == null)
-            return photoStatusBuilder.getErrorStatus("Сообщеения не существует");
+            return photoStatusBuilder.getErrorStatus("Сообщения не существует");
 
         Status responseStatus = photoStatusBuilder.getResponseStatus(message);
 
@@ -429,33 +401,6 @@ public class Application extends Controller {
         friendship.setUser2Delivered(false);
         friendship.save();
         friendship.refresh();
-
-        if (outStream != null)
-            outStream.write(Json.stringify(Json.toJson(friendship)));
-    }
-
-
-    /**
-     * Handle the chat websocket.
-     */
-    public static WebSocket<JsonNode> chat(final String username) {
-        WebSocket<JsonNode> websocket = new WebSocket<JsonNode>() {
-
-            // Called when the Websocket Handshake is done.
-            public void onReady(In<JsonNode> in, Out<JsonNode> out) {
-
-                // Join the chat room.
-                try {
-                    ChatRoom.join(username, in, out);
-                    JsonNode ok = Json.toJson(("{\"status\" : \"ok123\"}"));
-                    out.write(ok);
-                    ChatRoom.remoteMessage("connected");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-        return websocket;
     }
 
     public static Result updateLike() {
@@ -508,12 +453,9 @@ public class Application extends Controller {
         return settingsBuilder.getErrorStatus("Settings is not found..");
     }
 
-    public static Result getFromFriendship() {
-        StatusBuilder<List<Message>> messagesStatusBuilder = new StatusBuilder<List<Message>>();
+    public static Result getFromFriendship(Long friendship_id) {
 
-        JsonNode body = request().body().asJson();
-
-        Friendship friendship = Json.fromJson(body, Friendship.class);
+        Friendship friendship = Friendship.find.byId(friendship_id);
 
         List<Message> messageList = Message.find.where()
                 .or(
@@ -523,6 +465,8 @@ public class Application extends Controller {
                                  Expr.eq("who", friendship.getUser2())))
                 .findList();
 
+
+        StatusBuilder messagesStatusBuilder = new StatusBuilder<List<Message>>();
 
         if (messageList != null)
             return messagesStatusBuilder.getResponseStatus(messageList);

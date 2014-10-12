@@ -1,4 +1,4 @@
-name := """play2-crud-activator"""
+name := """vinder1"""
 
 version := "0.7.3-SNAPSHOT"
 
