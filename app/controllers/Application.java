@@ -130,14 +130,19 @@ public class Application extends Controller {
 
         User oldUser = User.find.byId(id);
 
-        if (oldUser == null)
-            return userStatusBuilder.getErrorStatus("Пользователь не существует");
+        oldUser.setAge(newUser.getAge());
+        oldUser.setVip_status(newUser.getVip_status());
+        //oldUser.setLocation(newUser.getLocation());
+        oldUser.setSex(newUser.getSex());
+        oldUser.setReg_id(newUser.getReg_id());
 
-        oldUser.update(newUser);
+//        if (oldUser == null)
+//            return userStatusBuilder.getErrorStatus("Пользователь не существует");
 
-        oldUser.refresh();
+        oldUser.save();
 
-        Status responseStatus = userStatusBuilder.getResponseStatus(oldUser);
+
+        Status responseStatus = userStatusBuilder.getResponseStatus(newUser);
 
         return responseStatus;
     }
@@ -504,12 +509,14 @@ public class Application extends Controller {
         JsonNode body = request().body().asJson();
 
         Settings settings = Json.fromJson(body, Settings.class);
-//
-//        settings.save();
-////
-//        User user = User.find.byId(user_id);
 
-        settings.update();
+      //  settings.save();
+//
+        User user = User.find.byId(user_id);
+
+        user.setSettings(settings);
+
+        user.update();
 
 
         if (settings != null)

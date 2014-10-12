@@ -9,6 +9,6 @@ package controllers;
 public class Utils {
     public static Integer getDistanceInKm() {
 
-                         return 0;
+        return 0;
     }
 }
