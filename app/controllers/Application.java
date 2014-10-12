@@ -516,7 +516,7 @@ public class Application extends Controller {
 
         user.setSettings(settings);
 
-        user.update();
+        user.save();
 
 
         if (settings != null)
