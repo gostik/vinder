@@ -6,10 +6,7 @@ import play.data.validation.Constraints;
 import play.db.ebean.Model;
 import play.utils.dao.BasicModel;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,11 +16,12 @@ import javax.persistence.Table;
  */
 
 /*
-* {\"filter_by_pro\":true,\"filter_is_pro\":true,\"sex\":2,
+* {\"filter_by_pro\":true,\"filter_is_pro\":true,\"sex_for_search\":2,
 * \"max_age\":75,\"min_age\":18,\"range_in_km\":3000,\"hide_age\":false}",
     "id": "53c50f5c6fd43c0b00cec618"*/
-@Entity
-@Table(name = "settings")
+//@Entity
+//@Table(name = "settings")
+@Embeddable
 public class Settings extends Model implements BasicModel<Long> {
 
     public static Finder<Long, Settings> find = new Model.Finder<Long, Settings>(Long.class, Settings.class);
@@ -43,7 +41,7 @@ public class Settings extends Model implements BasicModel<Long> {
 
     @Basic
     @Constraints.Max(value = 2)
-    Integer sex;
+    Integer sex_for_search;
 
     @Basic
     @Constraints.Max(value = 100)
@@ -87,12 +85,12 @@ public class Settings extends Model implements BasicModel<Long> {
         this.filter_is_pro = filter_is_pro;
     }
 
-    public Integer getSex() {
-        return sex;
+    public Integer getSex_for_search() {
+        return sex_for_search;
     }
 
-    public void setSex(Integer sex) {
-        this.sex = sex;
+    public void setSex_for_search(Integer sex_for_search) {
+        this.sex_for_search = sex_for_search;
     }
 
     public Integer getMin_age() {

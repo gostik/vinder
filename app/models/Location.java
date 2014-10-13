@@ -13,8 +13,9 @@ import javax.persistence.*;
  * Date: 12.08.2014
  * Time: 11:03
  */
-@Entity
-@Table(name = "locations")
+//@Entity
+//@Table(name = "locations")
+@Embeddable
 public class Location {
 
     public static Model.Finder<Long, Message> find = new Model.Finder<Long, Message>(Long.class, Message.class);

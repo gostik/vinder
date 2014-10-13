@@ -39,7 +39,7 @@ public class User extends Model implements BasicModel<Long> {
     @Basic
     private String last_name;
 
-    @Basic
+    @Embedded
     Location location;
 
     @Basic
@@ -64,8 +64,10 @@ public class User extends Model implements BasicModel<Long> {
     @Basic
     private Integer age;
 
-    @Basic
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    //@Basic
+
+    //@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @Embedded
     private Settings settings;
 
     @Basic

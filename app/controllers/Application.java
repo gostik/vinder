@@ -5,28 +5,15 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.*;
-import org.joda.time.DateTime;
-import play.api.libs.iteratee.Concurrent;
-import play.api.libs.ws.Response;
-import play.api.libs.ws.WS;
-import play.libs.F;
 import play.libs.Json;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.WebSocket;
-import scala.Function1;
-import scala.Tuple2;
-import scala.collection.Seq;
-import scala.collection.immutable.LinearSeq;
 
-import java.beans.Expression;
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 public class Application extends Controller {
-
 
 
     public static Result index() {
@@ -62,13 +49,13 @@ public class Application extends Controller {
             return photoStatusBuilder.getErrorStatus("Пользователь не найден");
 
         Settings settings = user.getSettings();
-        settings.refresh();
+
 
         ExpressionList<User> query = User.find.where().conjunction()
                 .between("age", settings.getMin_age(), settings.getMax_age())
                 .ne("id", id)
                         //sex == sex in settngs or sex ==0
-                .disjunction().add(Expr.eq("sex", settings.getSex())).add(Expr.eq("sex", 0));
+                .disjunction().add(Expr.eq("sex", settings.getSex_for_search())).add(Expr.eq("sex", 0));
         query.findList();
 
         if (settings.getFilter_by_pro()) {
@@ -242,6 +229,7 @@ public class Application extends Controller {
     }
 
     static GCMSender gcmSender = new GCMSender();
+
     @BodyParser.Of(BodyParser.Json.class)
     public static Result newMessage() {
         StatusBuilder<Message> messageStatusBuilder = new StatusBuilder<Message>();
@@ -255,9 +243,8 @@ public class Application extends Controller {
             message.save();
             message.refresh();
 
-            sendToGcm(message);
+            sendMessageToGcm(message);
         }
-
 
 
         Status responseStatus = messageStatusBuilder.getResponseStatus(message);
@@ -265,12 +252,25 @@ public class Application extends Controller {
         return responseStatus;
     }
 
-    private static void sendToGcm(Message message) {
+    private static void sendMessageToGcm(Message message) {
 
-        Notification notification = new Notification(message.getWhom().getReg_id(),message);
+        JsonNode jsonNode = Json.toJson(message);
+        gcmSender.sendMessageViaGCM(message.getWhom().getReg_id(),"message",Json.stringify(jsonNode));
+    }
 
-        JsonNode jsonNode = Json.toJson(notification);
-        gcmSender.sendMessageViaGCM(jsonNode.toString());
+    private static void sendFrendshipToGcm(Friendship friendship) {
+
+        JsonNode jsonNode = Json.toJson(friendship);
+        if (!friendship.getUser1Delivered())
+            gcmSender.sendMessageViaGCM(friendship.getUser1().getReg_id(),"friendship",Json.stringify(jsonNode));
+
+        //jsonNode = Json.toJson(notification);
+        if (!friendship.getUser2Delivered())
+            gcmSender.sendMessageViaGCM(friendship.getUser2().getReg_id(),"friendship",Json.stringify(jsonNode));
+
+        friendship.setUser1Delivered(true);
+        friendship.setUser2Delivered(true);
+        friendship.update();
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -406,6 +406,8 @@ public class Application extends Controller {
         friendship.setUser2Delivered(false);
         friendship.save();
         friendship.refresh();
+
+        sendFrendshipToGcm(friendship);
     }
 
     public static Result updateLike() {
@@ -446,10 +448,6 @@ public class Application extends Controller {
 
         Friendship friendship = Friendship.find.byId(friendshipJson.getID());
 
-        friendship.setUser1Delivered(friendshipJson.getUser1Delivered());
-
-        friendship.setUser2Delivered(friendshipJson.getUser2Delivered());
-
         friendship.update();
 
         if (friendship != null)
@@ -465,9 +463,9 @@ public class Application extends Controller {
         List<Message> messageList = Message.find.where()
                 .or(
                         Expr.and(Expr.eq("who", friendship.getUser1()),
-                                 Expr.eq("whom", friendship.getUser2())),
+                                Expr.eq("whom", friendship.getUser2())),
                         Expr.and(Expr.eq("whom", friendship.getUser1()),
-                                 Expr.eq("who", friendship.getUser2())))
+                                Expr.eq("who", friendship.getUser2())))
                 .findList();
 
 
@@ -510,13 +508,13 @@ public class Application extends Controller {
 
         Settings settings = Json.fromJson(body, Settings.class);
 
-      //  settings.save();
+        //  settings.save();
 //
         User user = User.find.byId(user_id);
 
         user.setSettings(settings);
 
-        user.save();
+        user.update();
 
 
         if (settings != null)

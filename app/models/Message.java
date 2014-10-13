@@ -21,7 +21,6 @@ import java.util.Date;
 @Table(name = "messages")
 public class Message extends Model implements BasicModel<Long> {
 
-
     public static Finder<Long, Message> find = new Model.Finder<Long, Message>(Long.class, Message.class);
 
     @Id
@@ -34,7 +33,7 @@ public class Message extends Model implements BasicModel<Long> {
     Date createdAt;
 
     @Basic
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     User who;
 
     @JsonProperty("who_id")
@@ -47,7 +46,7 @@ public class Message extends Model implements BasicModel<Long> {
     }
 
     @Basic
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     User whom;
 
     public Date getCreatedAt() {
@@ -87,7 +86,7 @@ public class Message extends Model implements BasicModel<Long> {
 
     @Basic
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     Friendship friendship;
 
     @JsonProperty("invitation_id")

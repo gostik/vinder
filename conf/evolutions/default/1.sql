@@ -34,13 +34,6 @@ create table likes (
   constraint pk_likes primary key (id))
 ;
 
-create table locations (
-  id                        bigint not null,
-  latitude                  varchar(255),
-  longitude                 varchar(255),
-  constraint pk_locations primary key (id))
-;
-
 create table messages (
   id                        bigint not null,
   created_at                timestamp,
@@ -63,18 +56,6 @@ create table photos (
   constraint pk_photos primary key (id))
 ;
 
-create table settings (
-  key                       bigint not null,
-  filter_by_pro             boolean,
-  filter_is_pro             boolean,
-  sex                       integer,
-  min_age                   integer,
-  max_age                   integer,
-  range_in_km               integer,
-  hide_age                  boolean,
-  constraint pk_settings primary key (key))
-;
-
 create table simple (
   key                       bigint not null,
   name                      varchar(255),
@@ -85,13 +66,21 @@ create table users (
   id                        bigint not null,
   first_name                varchar(255),
   last_name                 varchar(255),
+  latitude                  varchar(255),
+  longitude                 varchar(255),
   sex                       integer,
   uid                       bigint,
   reg_id                    varchar(255),
   created_date              timestamp,
   updated_date              timestamp,
   age                       integer,
-  settings_key              bigint,
+  filter_by_pro             boolean,
+  filter_is_pro             boolean,
+  sex_for_search            integer,
+  min_age                   integer,
+  max_age                   integer,
+  range_in_km               integer,
+  hide_age                  boolean,
   pro_status                boolean,
   vip_status                boolean,
   constraint pk_users primary key (id))
@@ -109,13 +98,9 @@ create sequence friendships_seq;
 
 create sequence likes_seq;
 
-create sequence locations_seq;
-
 create sequence messages_seq;
 
 create sequence photos_seq;
-
-create sequence settings_seq;
 
 create sequence simple_seq;
 
@@ -143,8 +128,6 @@ alter table messages add constraint fk_messages_friendship_10 foreign key (frien
 create index ix_messages_friendship_10 on messages (friendship_id);
 alter table photos add constraint fk_photos_user_11 foreign key (user_id) references users (id) on delete restrict on update restrict;
 create index ix_photos_user_11 on photos (user_id);
-alter table users add constraint fk_users_settings_12 foreign key (settings_key) references settings (key) on delete restrict on update restrict;
-create index ix_users_settings_12 on users (settings_key);
 
 
 
@@ -162,13 +145,9 @@ drop table if exists friendships;
 
 drop table if exists likes;
 
-drop table if exists locations;
-
 drop table if exists messages;
 
 drop table if exists photos;
-
-drop table if exists settings;
 
 drop table if exists simple;
 
@@ -184,13 +163,9 @@ drop sequence if exists friendships_seq;
 
 drop sequence if exists likes_seq;
 
-drop sequence if exists locations_seq;
-
 drop sequence if exists messages_seq;
 
 drop sequence if exists photos_seq;
-
-drop sequence if exists settings_seq;
 
 drop sequence if exists simple_seq;
 

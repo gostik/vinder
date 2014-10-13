@@ -1,18 +1,20 @@
 package models;
 
 import controllers.Constants;
+import scala.Array;
+
+import java.util.ArrayList;
 
 /**
  * Created by user_sca on 12.10.2014.
  */
-public class Notification
+public class Notification<T>
 {
-    public Notification(String to, Message message) {
-        this.to = to;
-        this.message = message;
-    }
+    public Notification(T message) {
 
-    public String to;
-    public Message message;
+        data = new Data<T>(message);
+    }
+    public Data<T> data;
     public String time_to_live = Constants.time_to_live;
 }
+
