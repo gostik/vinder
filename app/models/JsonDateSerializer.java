@@ -32,8 +32,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JsonDateSerializer extends JsonSerializer<Date>{
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");//Z
+                                                                          //2014-10-14T03:36:53.036
     @Override
     public void serialize(Date date, JsonGenerator gen, SerializerProvider provider)
             throws IOException, JsonProcessingException {

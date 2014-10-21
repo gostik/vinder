@@ -73,7 +73,6 @@ public class Message extends Model implements BasicModel<Long> {
             return null;
         }
     }
-
     @Override
     public Long getKey() {
         return ID;

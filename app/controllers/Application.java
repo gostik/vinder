@@ -18,7 +18,6 @@ public class Application extends Controller {
 
     public static Result index() {
 
-
         return ok();
     }
 
@@ -53,10 +52,12 @@ public class Application extends Controller {
 
         ExpressionList<User> query = User.find.where().conjunction()
                 .between("age", settings.getMin_age(), settings.getMax_age())
-                .ne("id", id)
+                .ne("id", id).where()
                         //sex == sex in settngs or sex ==0
-                .disjunction().add(Expr.eq("sex", settings.getSex_for_search())).add(Expr.eq("sex", 0));
-        query.findList();
+                .disjunction()
+                .add(Expr.eq("sex", settings.getSex_for_search()))
+                .add(Expr.eq("sex", 0));
+        List<User> list = query.findList();
 
         if (settings.getFilter_by_pro()) {
             query = query.where().disjunction()
@@ -70,11 +71,21 @@ public class Application extends Controller {
 
             //получаем фотки пользователя
             List<Photo> photos = Photo.find.where().eq("user", userForCheck).findList();
+            //Если мы уже проголосовали 1 раз против , то не показываем
+            int rowCount1 = Like.find.where()
+                    .eq("who", user)
+                    .eq("whom", userForCheck)
+                    .eq("result", Boolean.FALSE)
+                    .findRowCount();
+            if (rowCount1>0) continue;
 
             for (Photo photo : photos) {
+
+
+
+
                 //берем те , за которые не проголосовали
                 int rowCount = Like.find.where().eq("photo", photo).eq("who", user).findRowCount();
-
                 //если находим ту, за которую не проголосовали- выдаеем
                 if (rowCount == 0)
                     return photoStatusBuilder.getResponseStatus(photo);
@@ -255,18 +266,20 @@ public class Application extends Controller {
     private static void sendMessageToGcm(Message message) {
 
         JsonNode jsonNode = Json.toJson(message);
-        gcmSender.sendMessageViaGCM(message.getWhom().getReg_id(),"message",Json.stringify(jsonNode));
+        gcmSender.sendMessageViaGCM(message.getWhom().getReg_id(), "message", Json.stringify(jsonNode));
     }
 
     private static void sendFrendshipToGcm(Friendship friendship) {
 
-        JsonNode jsonNode = Json.toJson(friendship);
+        Long friendshipID = friendship.getID();
+
+        JsonNode jsonNode = Json.toJson(friendshipID);
         if (!friendship.getUser1Delivered())
-            gcmSender.sendMessageViaGCM(friendship.getUser1().getReg_id(),"friendship",Json.stringify(jsonNode));
+            gcmSender.sendMessageViaGCM(friendship.getUser1().getReg_id(), "friendship", Json.stringify(jsonNode));
 
         //jsonNode = Json.toJson(notification);
         if (!friendship.getUser2Delivered())
-            gcmSender.sendMessageViaGCM(friendship.getUser2().getReg_id(),"friendship",Json.stringify(jsonNode));
+            gcmSender.sendMessageViaGCM(friendship.getUser2().getReg_id(), "friendship", Json.stringify(jsonNode));
 
         friendship.setUser1Delivered(true);
         friendship.setUser2Delivered(true);

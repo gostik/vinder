@@ -41,10 +41,6 @@ public class Photo extends Model implements BasicModel<Long> {
 
     @ManyToOne(fetch = FetchType.EAGER)
     User user;
-//
-//    @OneToMany(fetch = FetchType.EAGER)
-//    List<Like> likeList;
-
 
     @Override
     public Long getKey() {
@@ -87,12 +83,5 @@ public class Photo extends Model implements BasicModel<Long> {
     public void setUser(User user) {
         this.user = user;
     }
-//
-//    public List<Like> getLikeList() {
-//        return likeList;
-//    }
-//
-//    public void setLikeList(List<Like> likeList) {
-//        this.likeList = likeList;
-//    }
+
 }

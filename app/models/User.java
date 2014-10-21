@@ -43,7 +43,7 @@ public class User extends Model implements BasicModel<Long> {
     Location location;
 
     @Basic
-    private Integer sex;
+    private Integer sex = 0;
 
     @Basic
     private Long uid;

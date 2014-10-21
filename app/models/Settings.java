@@ -41,7 +41,7 @@ public class Settings extends Model implements BasicModel<Long> {
 
     @Basic
     @Constraints.Max(value = 2)
-    Integer sex_for_search;
+    Integer sex_for_search=2;
 
     @Basic
     @Constraints.Max(value = 100)
